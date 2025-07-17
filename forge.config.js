@@ -4,9 +4,13 @@ const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 module.exports = {
   packagerConfig: {
     asar: true,
-    icon: './assets/icon',
     name: 'Markdown富文本编辑器',
-    executableName: 'markdown-editor'
+    executableName: 'markdown-editor',
+    // 增加下载超时时间
+    downloadOptions: {
+      timeout: 300000,
+      retries: 5
+    }
   },
   rebuildConfig: {},
   makers: [
@@ -35,6 +39,15 @@ module.exports = {
         options: {
           maintainer: 'lizeyu',
           homepage: 'https://github.com/lizeyu/markdown-editor'
+        }
+      },
+    },
+    {
+      name: '@reforged/maker-appimage',
+      config: {
+        options: {
+          categories: ['Office', 'TextEditor'],
+          icon: 'assets/icon.svg'
         }
       },
     },

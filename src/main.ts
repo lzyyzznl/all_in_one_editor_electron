@@ -7,8 +7,15 @@ import * as path from 'path';
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
 declare const MAIN_WINDOW_VITE_NAME: string;
 
-if (require('electron-squirrel-startup')) {
-  app.quit();
+// 处理 Squirrel 启动事件
+try {
+  const squirrelStartup = require('electron-squirrel-startup');
+  if (squirrelStartup) {
+    app.quit();
+  }
+} catch (error) {
+  // 如果模块不存在，忽略错误
+  console.log('electron-squirrel-startup not found, continuing...');
 }
 
 const createWindow = (): void => {
