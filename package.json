@@ -8,7 +8,7 @@
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
-    "make:appimage": "electron-forge make --platform=linux",
+    "make:appimage": "electron-forge make --platform=linux --targets=@reforged/maker-appimage",
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx ."
   },

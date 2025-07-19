@@ -32,6 +32,7 @@ module.exports = {
           homepage: 'https://github.com/lizeyu/markdown-editor'
         }
       },
+      platforms: ['linux']
     },
     {
       name: '@electron-forge/maker-rpm',
@@ -41,15 +42,18 @@ module.exports = {
           homepage: 'https://github.com/lizeyu/markdown-editor'
         }
       },
+      platforms: ['linux']
     },
     {
       name: '@reforged/maker-appimage',
       config: {
         options: {
           categories: ['Office', 'TextEditor'],
-          icon: 'assets/icon.svg'
+          icon: 'assets/icon.svg',
+          bin: 'markdown-editor'
         }
       },
+      platforms: ['linux']
     },
   ],
   plugins: [
