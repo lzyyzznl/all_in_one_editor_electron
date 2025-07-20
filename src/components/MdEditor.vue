@@ -795,17 +795,9 @@ import { Icon } from "@iconify/vue";
 // Tiptap 相关导入
 import { StarterKit } from "@syfxlin/tiptap-starter-kit";
 import { BubbleMenu } from "@tiptap/extension-bubble-menu";
-import CharacterCount from "@tiptap/extension-character-count";
-import Focus from "@tiptap/extension-focus";
 import { EditorContent, useEditor } from "@tiptap/vue-3";
 // @ts-ignore
-// @ts-ignore
-import TextAlign from "@tiptap/extension-text-align";
-// @ts-ignore
-import LineHeight from "tiptap-extension-line-height";
-// @ts-ignore
 import TableOfContents from "@tiptap/extension-table-of-contents";
-import Typography from "@tiptap/extension-typography";
 // @ts-ignore
 import SearchAndReplace from "@sereneinserenade/tiptap-search-and-replace";
 
@@ -889,16 +881,6 @@ const editor = useEditor({
 			clickMenu: true,
 			codeBlock: true,
 		}),
-		Focus.configure({
-			className: "has-focus",
-			mode: "all",
-		}),
-		CharacterCount.configure({
-			limit: 0, // 不限制字符数，仅统计
-		}),
-		TextAlign,
-		LineHeight,
-		Typography,
 		SearchAndReplace.configure({
 			searchResultClass: "search-result",
 			disableRegex: false,
