@@ -680,6 +680,7 @@ interface Emits {
 	(e: "select-directory", dirPath: string, node: FileTreeNode): void;
 	(e: "file-deleted", node: FileTreeNode): void;
 	(e: "file-updated", oldNode: FileTreeNode, newNode: FileTreeNode): void;
+	(e: "folder-opened", dirPath: string): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -752,6 +753,8 @@ const selectRootDirectory = async () => {
 		const dirPath = await chooseDirectory();
 		rootPath.value = dirPath;
 		emit("update:modelValue", dirPath);
+		// 发射文件夹打开成功事件，用于自动展开侧边栏
+		emit("folder-opened", dirPath);
 		await loadFullDirectoryTree();
 		await saveDirectoryHistory(dirPath);
 		ElNotification({

@@ -65,6 +65,7 @@
 						@select-directory="handleSelectDirectory"
 						@file-deleted="handleFileDeleted"
 						@file-updated="handleFileUpdated"
+						@folder-opened="handleFolderOpened"
 					/>
 				</div>
 			</div>
@@ -623,6 +624,12 @@ const handleOpenFolderRequested = async () => {
 			// 设置根目录路径，触发文件树加载
 			rootDirectoryPath.value = folderPath;
 
+			// 如果侧边栏当前是隐藏状态，则自动展开
+			if (isCollapsed.value) {
+				console.log("自动展开侧边栏（欢迎界面）");
+				isCollapsed.value = false;
+			}
+
 			// 通知用户文件夹已打开
 			ElNotification({
 				title: "文件夹已打开",
@@ -1114,6 +1121,16 @@ const handleFileUpdated = (oldNode: FileTreeNode, newNode: FileTreeNode) => {
 	}
 };
 
+// 处理文件夹打开事件
+const handleFolderOpened = (dirPath: string) => {
+	console.log("文件夹打开事件:", dirPath);
+	// 如果侧边栏当前是隐藏状态，则自动展开
+	if (isCollapsed.value) {
+		console.log("自动展开侧边栏");
+		isCollapsed.value = false;
+	}
+};
+
 // 处理文件修改状态
 const handleFileModified = async (
 	modified: boolean,
@@ -1598,6 +1615,10 @@ watch(
 	() => rootDirectoryPath.value,
 	async (newPath) => {
 		if (newPath && !isInitializing.value) {
+			// 如果文件夹打开成功且侧边栏当前是隐藏状态，则自动展开侧边栏
+			if (isCollapsed.value) {
+				isCollapsed.value = false;
+			}
 			await loadTabsState();
 		}
 	}
