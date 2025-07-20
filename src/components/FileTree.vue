@@ -1709,8 +1709,73 @@ const handleCreateCommand = async (command: string, node: FileTreeNode) => {
 };
 
 // 展开到指定节点
-const expandToNode = (targetPath: string) => {
+const expandToNode = async (targetPath: string) => {
 	console.log("展开到节点:", targetPath);
+
+	if (!rootPath.value || !targetPath.startsWith(rootPath.value)) {
+		console.warn("目标路径不在当前工作目录内:", targetPath);
+		return;
+	}
+
+	// 计算相对路径
+	const relativePath = targetPath
+		.replace(rootPath.value, "")
+		.replace(/^[\/\\]/, "");
+	const pathParts = relativePath.split(/[\/\\]/);
+
+	// 构建需要展开的节点ID路径
+	const expandKeys: string[] = [];
+	let currentPath = "";
+
+	for (let i = 0; i < pathParts.length - 1; i++) {
+		// 不包括文件本身
+		currentPath = currentPath ? `${currentPath}/${pathParts[i]}` : pathParts[i];
+		expandKeys.push(currentPath);
+	}
+
+	// 展开所有父级目录
+	defaultExpandedKeys.value = [
+		...new Set([...defaultExpandedKeys.value, ...expandKeys]),
+	];
+
+	// 等待DOM更新
+	await nextTick();
+
+	// 选中目标文件
+	const targetNodeId = relativePath;
+	selectedNodeId.value = targetNodeId;
+
+	// 查找并选中目标节点
+	const findAndSelectNode = (nodes: FileTreeNode[]): FileTreeNode | null => {
+		for (const node of nodes) {
+			if (node.id === targetNodeId) {
+				selectedNode.value = node;
+				return node;
+			}
+			if (node.children) {
+				const found = findAndSelectNode(node.children);
+				if (found) return found;
+			}
+		}
+		return null;
+	};
+
+	const targetNode = findAndSelectNode(treeData.value);
+	if (targetNode) {
+		console.log("成功定位到文件:", targetNode.label);
+
+		// 滚动到目标节点（如果可能的话）
+		await nextTick();
+		if (treeRef.value) {
+			try {
+				treeRef.value.setCurrentKey(targetNodeId);
+			} catch (error) {
+				console.warn("无法设置当前选中节点:", error);
+			}
+		}
+	} else {
+		console.warn("未找到目标节点:", targetNodeId);
+	}
 };
 
 // 高亮搜索文本

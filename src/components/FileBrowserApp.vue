@@ -282,208 +282,10 @@
 				</div>
 			</div>
 		</div>
-
-		<!-- 另存为对话框 -->
-		<el-dialog
-			v-model="showSaveAsDialog"
-			width="420px"
-			draggable
-			@close="resetSaveAsDialog"
-			class="[&_.el-dialog]:rounded-2xl [&_.el-dialog]:shadow-2xl [&_.el-dialog__header]:bg-gradient-to-135deg [&_.el-dialog__header]:from-slate-50 [&_.el-dialog__header]:to-slate-200 [&_.el-dialog__header]:rounded-t-2xl [&_.el-dialog__header]:p-6 [&_.el-dialog__header]:border-b [&_.el-dialog__header]:border-slate-200 [&_.el-dialog__title]:font-semibold [&_.el-dialog__title]:text-slate-800"
-		>
-			<template #header>
-				<div class="flex items-center gap-2">
-					<Icon icon="material-symbols:save-as" />
-					另存为文件
-				</div>
-			</template>
-			<el-form :model="saveAsForm" label-width="90px" class="p-2">
-				<el-form-item class="mb-6">
-					<template #label>
-						<div class="flex items-center gap-2">
-							<Icon icon="material-symbols:folder-open" />
-							保存位置
-						</div>
-					</template>
-					<div class="flex gap-2">
-						<el-input
-							v-model="saveAsForm.targetPath"
-							placeholder="选择保存目录..."
-							readonly
-							size="large"
-							class="flex-1 !rounded-xl [&_.el-input__wrapper]:rounded-xl [&_.el-input__wrapper]:shadow-sm"
-						/>
-						<el-button
-							@click="selectSaveDirectory"
-							size="large"
-							class="!rounded-xl !px-4"
-						>
-							<Icon icon="material-symbols:folder-open" class="mr-1" />
-							选择
-						</el-button>
-					</div>
-				</el-form-item>
-				<el-form-item class="mb-6">
-					<template #label>
-						<div class="flex items-center gap-2">
-							<Icon icon="material-symbols:edit" />
-							文件名
-						</div>
-					</template>
-					<el-input
-						v-model="saveAsForm.fileName"
-						placeholder="输入文件名..."
-						autofocus
-						@keyup.enter="saveAsFile"
-						size="large"
-						class="!rounded-xl [&_.el-input__wrapper]:rounded-xl [&_.el-input__wrapper]:shadow-sm [&_.el-input__wrapper]:transition-all [&_.el-input__wrapper]:duration-200 [&_.el-input__wrapper:hover]:shadow-md [&_.el-input__wrapper.is-focus]:shadow-blue-100 [&_.el-input__wrapper.is-focus]:ring-3 [&_.el-input__wrapper.is-focus]:ring-blue-100"
-					/>
-				</el-form-item>
-				<el-form-item class="mb-4">
-					<template #label>
-						<div class="flex items-center gap-2">
-							<Icon icon="material-symbols:folder-open" />
-							类型
-						</div>
-					</template>
-					<el-select
-						v-model="saveAsForm.fileType"
-						placeholder="选择文件类型"
-						class="w-full"
-						size="large"
-					>
-						<el-option value="md">
-							<div class="flex items-center gap-2">
-								<Icon icon="material-symbols:edit-note" />
-								Markdown文件 (.md)
-							</div>
-						</el-option>
-						<el-option value="txt">
-							<div class="flex items-center gap-2">
-								<Icon icon="material-symbols:description" />
-								文本文件 (.txt)
-							</div>
-						</el-option>
-						<el-option value="json">
-							<div class="flex items-center gap-2">
-								<Icon icon="material-symbols:data-object" />
-								JSON文件 (.json)
-							</div>
-						</el-option>
-						<el-option value="js">
-							<div class="flex items-center gap-2">
-								<Icon icon="material-symbols:code" />
-								JavaScript文件 (.js)
-							</div>
-						</el-option>
-						<el-option value="ts">
-							<div class="flex items-center gap-2">
-								<Icon icon="material-symbols:code" />
-								TypeScript文件 (.ts)
-							</div>
-						</el-option>
-						<el-option value="vue">
-							<div class="flex items-center gap-2">
-								<Icon icon="material-symbols:code" />
-								Vue文件 (.vue)
-							</div>
-						</el-option>
-						<el-option value="html">
-							<div class="flex items-center gap-2">
-								<Icon icon="material-symbols:description" />
-								HTML文件 (.html)
-							</div>
-						</el-option>
-						<el-option value="css">
-							<div class="flex items-center gap-2">
-								<Icon icon="material-symbols:description" />
-								CSS文件 (.css)
-							</div>
-						</el-option>
-					</el-select>
-				</el-form-item>
-			</el-form>
-			<template #footer>
-				<div class="flex justify-end gap-3 p-2">
-					<el-button
-						@click="resetSaveAsDialog"
-						size="large"
-						class="!rounded-xl"
-					>
-						取消
-					</el-button>
-					<el-button
-						@click="saveAsFile"
-						type="primary"
-						size="large"
-						class="!rounded-xl !bg-gradient-to-r !from-blue-600 !to-purple-600 !border-none"
-					>
-						<div class="flex items-center gap-2">
-							<Icon icon="material-symbols:save-as" />
-							保存
-						</div>
-					</el-button>
-				</div>
-			</template>
-		</el-dialog>
-
-		<!-- 文件夹选择器对话框 -->
-		<el-dialog
-			v-model="showFolderSelector"
-			width="400px"
-			draggable
-			@close="showFolderSelector = false"
-			class="[&_.el-dialog]:rounded-2xl [&_.el-dialog]:shadow-2xl"
-		>
-			<template #header>
-				<div class="flex items-center gap-2">
-					<Icon icon="material-symbols:folder-open" />
-					选择保存文件夹
-				</div>
-			</template>
-			<div class="max-h-96 overflow-y-auto">
-				<el-tree
-					:data="folderTreeData"
-					:props="{ children: 'children', label: 'label' }"
-					node-key="id"
-					default-expand-all
-					:expand-on-click-node="false"
-					@node-click="confirmFolderSelection"
-					class="folder-tree"
-				>
-					<template #default="{ node, data }">
-						<div
-							class="flex items-center gap-2 py-1 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 rounded px-2 w-full"
-						>
-							<Icon icon="material-symbols:folder" class="text-blue-500" />
-							<span>{{ data.label }}</span>
-						</div>
-					</template>
-				</el-tree>
-			</div>
-			<template #footer>
-				<div class="flex justify-end">
-					<el-button @click="showFolderSelector = false">取消</el-button>
-				</div>
-			</template>
-		</el-dialog>
 	</div>
 </template>
 
-<style scoped>
-.folder-tree :deep(.el-tree-node__content) {
-	height: auto;
-	padding: 4px 0;
-}
-
-.folder-tree :deep(.el-tree-node__content:hover) {
-	background-color: transparent;
-}
-
-.folder-tree :deep(.el-tree-node__expand-icon) {
-	color: #6b7280;
-}
-</style>
+<style scoped></style>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from "vue";
@@ -492,7 +294,7 @@ import { ElMessageBox, ElNotification } from "element-plus";
 import VueDraggable from "vuedraggable";
 import FileTree from "./FileTree.vue";
 import MdEditor from "./MdEditor.vue";
-import { chooseDirectory, readDirectory } from "../utils/file-service";
+import { ElectronFileService } from "../utils/file-service-electron";
 import type { FileTreeNode } from "../utils/types";
 
 // 页面标题
@@ -579,16 +381,6 @@ const clearAllCache = (): void => {
 	fileContentCache.value.clear();
 	console.log("清除所有缓存");
 };
-
-// 另存为对话框相关
-const showSaveAsDialog = ref(false);
-const saveAsContent = ref("");
-const saveAsForm = ref({
-	fileName: "",
-	fileType: "md",
-	targetDirectory: null as string | null,
-	targetPath: "",
-});
 
 // 右键菜单相关
 const contextMenuVisible = ref(false);
@@ -1449,272 +1241,96 @@ const getCurrentVirtualTabId = () => {
 
 // 处理另存为请求
 const handleSaveAsRequested = async (content: string) => {
-	if (!rootDirectoryPath.value) {
-		ElNotification({
-			title: "保存失败",
-			message: "请先选择文件夹，然后再进行保存操作",
-			type: "error",
-			position: "bottom-right",
-			duration: 5000,
-			offset: 50,
-		});
-		return;
-	}
-
-	// 先设置内容和表单数据
-	saveAsContent.value = content;
-
-	// 设置默认保存目录为根目录
-	saveAsForm.value.targetDirectory = rootDirectoryPath.value;
-	saveAsForm.value.targetPath = "根目录";
-
-	// 设置默认文件名 - 优先使用当前标签的名称
-	const currentTab = openTabs.value.find((t) => t.id === activeTabId.value);
-
-	if (currentTab) {
-		// 使用标签的标题作为默认文件名，去掉扩展名
-		let fileName = currentTab.title.replace(/\.[^/.]+$/, "");
-
-		// 如果是默认的新建标签名，则使用更友好的名称
-		if (/^新建标签\d+$/.test(fileName)) {
-			fileName = "新建文档";
-		}
-
-		saveAsForm.value.fileName = fileName;
-	} else if (currentFilePath.value) {
-		const fileName = currentFilePath.value.split(/[\/\\]/).pop() || "新建文档";
-		saveAsForm.value.fileName = fileName.replace(/\.[^/.]+$/, "");
-	} else {
-		saveAsForm.value.fileName = "新建文档";
-	}
-
-	// 最后显示保存对话框，确保所有数据都已设置
-	showSaveAsDialog.value = true;
-};
-
-// 重置另存为对话框
-const resetSaveAsDialog = () => {
-	showSaveAsDialog.value = false;
-	saveAsForm.value.fileName = "";
-	saveAsForm.value.fileType = "md";
-	saveAsForm.value.targetDirectory = null;
-	saveAsForm.value.targetPath = "";
-	saveAsContent.value = "";
-};
-
-// 文件夹选择相关
-const showFolderSelector = ref(false);
-const folderTreeData = ref<any[]>([]);
-
-// 获取文件夹树数据
-const getFolderTreeData = async () => {
-	if (!rootDirectoryPath.value) {
-		return [];
-	}
-
-	// 递归获取所有文件夹
-	const getFoldersRecursively = async (
-		dirPath: string,
-		relativePath: string = ""
-	): Promise<any[]> => {
-		const folders: any[] = [];
-
-		try {
-			const result = await readDirectory(dirPath);
-			for (const item of result) {
-				if (item.isDirectory) {
-					const fullPath = relativePath
-						? `${relativePath}/${item.label}`
-						: item.label;
-					const folderNode = {
-						id: fullPath,
-						label: item.label,
-						path: item.path,
-						children: await getFoldersRecursively(item.path, fullPath),
-					};
-					folders.push(folderNode);
-				}
-			}
-		} catch (error) {
-			console.error("读取文件夹失败:", error);
-		}
-
-		return folders;
-	};
-
-	// 添加根目录选项
-	const rootOption = {
-		id: "",
-		label: "根目录",
-		path: rootDirectoryPath.value,
-		children: await getFoldersRecursively(rootDirectoryPath.value),
-	};
-
-	return [rootOption];
-};
-
-// 选择保存目录
-const selectSaveDirectory = async () => {
-	if (!rootDirectoryPath.value) {
-		ElNotification({
-			title: "操作失败",
-			message: "请先选择根目录",
-			type: "error",
-			position: "bottom-right",
-			duration: 5000,
-			offset: 50,
-		});
-		return;
-	}
-
 	try {
-		folderTreeData.value = await getFolderTreeData();
-		showFolderSelector.value = true;
-	} catch (error) {
-		console.error("获取文件夹列表失败:", error);
-		ElNotification({
-			title: "获取文件夹列表失败",
-			message: "无法加载文件夹结构",
-			type: "error",
-			position: "bottom-right",
-			duration: 5000,
-			offset: 50,
-		});
-	}
-};
+		// 创建 ElectronFileService 实例
+		const fileService = new ElectronFileService();
 
-// 确认选择文件夹
-const confirmFolderSelection = (selectedFolder: any) => {
-	if (selectedFolder) {
-		saveAsForm.value.targetDirectory = selectedFolder.path;
-		saveAsForm.value.targetPath = selectedFolder.label;
-		showFolderSelector.value = false;
-		ElNotification({
-			title: "目录选择成功",
-			message: `已选择目录: ${selectedFolder.label}`,
-			type: "success",
-			position: "bottom-right",
-			duration: 3000,
-			offset: 50,
-		});
-	}
-};
+		// 生成默认文件名
+		const currentTab = openTabs.value.find((t) => t.id === activeTabId.value);
+		let defaultFileName = "新建文档.md";
 
-// 执行另存为操作
-const saveAsFile = async () => {
-	if (!saveAsForm.value.fileName.trim()) {
-		ElNotification({
-			title: "输入错误",
-			message: "请输入文件名",
-			type: "warning",
-			position: "bottom-right",
-			duration: 4000,
-			offset: 50,
-		});
-		return;
-	}
+		if (currentTab) {
+			// 使用标签的标题作为默认文件名
+			let fileName = currentTab.title.replace(/\.[^/.]+$/, "");
 
-	if (!saveAsForm.value.targetDirectory) {
-		ElNotification({
-			title: "保存失败",
-			message: "请选择保存目录",
-			type: "error",
-			position: "bottom-right",
-			duration: 5000,
-			offset: 50,
-		});
-		return;
-	}
-
-	try {
-		const fileName = saveAsForm.value.fileName.trim();
-		const fileExtension = saveAsForm.value.fileType;
-		const fullFileName = fileName.endsWith(`.${fileExtension}`)
-			? fileName
-			: `${fileName}.${fileExtension}`;
-
-		const targetFilePath = `${saveAsForm.value.targetDirectory}/${fullFileName}`;
-
-		// 检查文件是否已存在
-		let fileExists = false;
-		try {
-			await window.electronAPI.readFile(targetFilePath);
-			fileExists = true;
-		} catch (error) {
-			// 文件不存在，这是正常情况
-			fileExists = false;
-		}
-
-		// 如果文件已存在，询问用户是否覆盖
-		if (fileExists) {
-			try {
-				await ElMessageBox.confirm(
-					`文件 "${fullFileName}" 已存在，是否要覆盖它？`,
-					"文件已存在",
-					{
-						type: "warning",
-						confirmButtonText: "覆盖",
-						cancelButtonText: "取消",
-						distinguishCancelAndClose: true,
-					}
-				);
-			} catch (action) {
-				// 用户取消了操作
-				return;
+			// 如果是默认的新建标签名，则使用更友好的名称
+			if (/^新建标签\d+$/.test(fileName)) {
+				fileName = "新建文档";
 			}
+
+			defaultFileName = `${fileName}.md`;
+		} else if (currentFilePath.value) {
+			const fileName =
+				currentFilePath.value.split(/[\/\\]/).pop() || "新建文档.md";
+			defaultFileName = fileName.endsWith(".md") ? fileName : `${fileName}.md`;
 		}
 
-		// 写入文件
-		const writeResult = await window.electronAPI.writeFile(
-			targetFilePath,
-			saveAsContent.value
+		// 使用系统级保存对话框
+		const savedFilePath = await fileService.saveAsFile(
+			content,
+			defaultFileName
 		);
-		if (!writeResult.success) {
-			throw new Error(writeResult.error || "写入文件失败");
+
+		// 如果用户取消了保存操作
+		if (!savedFilePath) {
+			return;
 		}
 
 		// 将虚拟标签页转换为真实文件标签页
-		const currentTab = openTabs.value.find((t) => t.id === activeTabId.value);
-		if (currentTab && currentTab.isVirtual) {
+		const currentTabAfterSave = openTabs.value.find(
+			(t) => t.id === activeTabId.value
+		);
+		if (currentTabAfterSave && currentTabAfterSave.isVirtual) {
+			const fileName = savedFilePath.split(/[\/\\]/).pop() || "未知文件";
+
 			// 创建新的FileTreeNode
 			const newNode: FileTreeNode = {
-				id: fullFileName,
-				label: fullFileName,
-				path: targetFilePath,
+				id: fileName,
+				label: fileName,
+				path: savedFilePath,
 				isDirectory: false,
 				isFile: true,
 			};
 
 			// 更新标签页
-			currentTab.filePath = targetFilePath;
-			currentTab.fileNode = newNode;
-			currentTab.title = fullFileName;
-			currentTab.fullPath = targetFilePath;
-			currentTab.isVirtual = false;
-			currentTab.virtualContent = undefined;
-			currentTab.isModified = false;
-			currentTab.lastSaveTime = Date.now();
+			currentTabAfterSave.filePath = savedFilePath;
+			currentTabAfterSave.fileNode = newNode;
+			currentTabAfterSave.title = fileName;
+			currentTabAfterSave.fullPath = savedFilePath;
+			currentTabAfterSave.isVirtual = false;
+			currentTabAfterSave.virtualContent = undefined;
+			currentTabAfterSave.isModified = false;
+			currentTabAfterSave.lastSaveTime = Date.now();
 
 			// 更新当前文件状态
-			currentFilePath.value = targetFilePath;
+			currentFilePath.value = savedFilePath;
 			currentFileNode.value = newNode;
 			fileModified.value = false;
 		}
 
+		// 检查保存路径是否在工作文件夹内
+		if (
+			rootDirectoryPath.value &&
+			savedFilePath.startsWith(rootDirectoryPath.value)
+		) {
+			// 刷新文件树并定位到新文件
+			if (fileTreeRef.value && fileTreeRef.value.loadFullDirectoryTree) {
+				await fileTreeRef.value.loadFullDirectoryTree();
+				// 定位到新保存的文件
+				if (fileTreeRef.value.expandToNode) {
+					await fileTreeRef.value.expandToNode(savedFilePath);
+				}
+			}
+		}
+
 		ElNotification({
 			title: "文件保存成功",
-			message: `文件 ${fullFileName} 已保存到 ${saveAsForm.value.targetPath}`,
+			message: `文件已保存到 ${savedFilePath}`,
 			type: "success",
 			position: "bottom-right",
 			duration: 3000,
 			offset: 50,
 		});
-		resetSaveAsDialog();
-
-		// 刷新文件树
-		if (fileTreeRef.value && fileTreeRef.value.loadFullDirectoryTree) {
-			await fileTreeRef.value.loadFullDirectoryTree();
-		}
 	} catch (error) {
 		console.error("另存为失败:", error);
 		ElNotification({
