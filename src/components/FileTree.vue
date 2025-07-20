@@ -6,19 +6,8 @@
 		<div
 			class="p-4 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-slate-50 to-blue-50 dark:from-slate-800 dark:to-slate-700 flex-shrink-0 shadow-sm"
 		>
-			<el-button
-				@click="selectRootDirectory"
-				class="w-full mb-4 !bg-slate-100 dark:!bg-slate-700 !border-slate-200 dark:!border-slate-600 !text-slate-700 dark:!text-slate-300 hover:!bg-slate-200 dark:hover:!bg-slate-600 !font-medium !py-3 !rounded-xl !shadow-sm hover:!shadow-md !transition-all !duration-300"
-				size="large"
-			>
-				<div class="flex items-center justify-center gap-2">
-					<Icon icon="material-symbols:folder-open" class="text-lg" />
-					<span class="font-medium">选择目录</span>
-				</div>
-			</el-button>
-
 			<!-- 文件搜索框 -->
-			<div v-if="rootPath" class="mb-4">
+			<div class="mb-4">
 				<el-input
 					v-model="searchQuery"
 					placeholder="搜索文件..."
@@ -26,6 +15,7 @@
 					clearable
 					@clear="clearSearch"
 					@input="filterFiles"
+					:disabled="!rootPath"
 					class="shadow-sm !rounded-xl [&_.el-input__wrapper]:rounded-xl [&_.el-input__wrapper]:shadow-sm [&_.el-input__wrapper]:transition-all [&_.el-input__wrapper]:duration-200 [&_.el-input__wrapper:hover]:shadow-md [&_.el-input__wrapper.is-focus]:shadow-blue-100 [&_.el-input__wrapper.is-focus]:ring-3 [&_.el-input__wrapper.is-focus]:ring-blue-100"
 				>
 					<template #prefix>

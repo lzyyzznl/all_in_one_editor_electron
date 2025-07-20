@@ -1,4 +1,3 @@
-65
 <template>
 	<!-- 加载状态 -->
 	<div
@@ -276,6 +275,7 @@
 						@file-saved="handleFileSaved"
 						@save-as-requested="handleSaveAsRequested"
 						@open-file-requested="handleOpenFileRequested"
+						@open-folder-requested="handleOpenFolderRequested"
 						@new-tab-requested="handleNewTabRequested"
 						@clear-cache-requested="handleClearCacheRequested"
 					/>
@@ -799,16 +799,7 @@ const handleOpenFileRequested = async () => {
 			const filePath = result.filePaths[0];
 			console.log("打开文件:", filePath);
 
-			// 如果没有选择工作目录，提示用户选择
-			if (!rootDirectoryPath.value) {
-				ElMessage.info("请先选择一个工作文件夹以便管理文件");
-				// 触发文件树组件的目录选择
-				if (fileTreeRef.value) {
-					await fileTreeRef.value.selectRootDirectory();
-				}
-			}
-
-			// 创建一个临时的文件节点
+			// 创建一个临时的文件节点，不再提示选择目录
 			const fileName = filePath.split(/[\/\\]/).pop() || filePath;
 			const tempNode: FileTreeNode = {
 				id: `file-${Date.now()}`,
@@ -818,12 +809,37 @@ const handleOpenFileRequested = async () => {
 				isFile: true,
 			};
 
-			// 打开文件
+			// 打开文件，不自动填充目录树
 			await handleSelectFile(filePath, tempNode);
 		}
 	} catch (error: any) {
 		console.error("打开文件失败:", error);
 		ElMessage.error("打开文件失败: " + (error as Error).message);
+	}
+};
+
+// 处理打开文件夹请求（从欢迎界面）
+const handleOpenFolderRequested = async () => {
+	try {
+		// 使用Electron API打开文件夹
+		const result = await window.electronAPI.showOpenDialog({
+			properties: ['openDirectory'],
+			title: '选择文件夹',
+		});
+
+		if (!result.canceled && result.filePaths && result.filePaths.length > 0) {
+			const folderPath = result.filePaths[0];
+			console.log("打开文件夹:", folderPath);
+
+			// 设置根目录路径，触发文件树加载
+			rootDirectoryPath.value = folderPath;
+			
+			// 通知用户文件夹已打开
+			ElMessage.success(`已打开文件夹: ${folderPath.split(/[\/\\]/).pop()}`);
+		}
+	} catch (error: any) {
+		console.error("打开文件夹失败:", error);
+		ElMessage.error("打开文件夹失败: " + (error as Error).message);
 	}
 };
 
@@ -1727,6 +1743,38 @@ const handleGlobalClick = (event: Event) => {
 	}
 };
 
+// 监听菜单事件
+const setupMenuListeners = () => {
+	if (window.electronAPI) {
+		window.electronAPI.onMenuAction((action: string) => {
+			switch (action) {
+				case 'open-folder':
+					if (fileTreeRef.value) {
+						fileTreeRef.value.selectRootDirectory();
+					}
+					break;
+				case 'open-file':
+					handleOpenFileRequested();
+					break;
+				case 'new-file':
+					createNewTab();
+					break;
+				case 'save':
+					if (mdEditorRef.value) {
+						mdEditorRef.value.saveFile();
+					}
+					break;
+				case 'save-as':
+					if (activeTabId.value && mdEditorRef.value) {
+						const content = mdEditorRef.value.getCurrentContent?.() || '';
+						handleSaveAsRequested(content);
+					}
+					break;
+			}
+		});
+	}
+};
+
 // 组件挂载
 onMounted(async () => {
 	document.addEventListener("keydown", handleKeyboard);
@@ -1734,9 +1782,12 @@ onMounted(async () => {
 	document.addEventListener("mousedown", handleGlobalClick, true); // 添加mousedown事件
 	window.addEventListener("beforeunload", handleBeforeUnload);
 
+	// 设置菜单事件监听
+	setupMenuListeners();
+
 	setTimeout(async () => {
 		isInitializing.value = false;
-		if (rootDirectoryHandle.value) {
+		if (rootDirectoryPath.value) {
 			await loadTabsState();
 		}
 	}, 500);

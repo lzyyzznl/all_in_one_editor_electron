@@ -449,12 +449,13 @@
 						</el-button>
 
 						<el-button
+							type="primary"
 							size="large"
-							@click="$emit('new-tab-requested')"
-							class="!h-12 !text-base !font-medium !rounded-xl !border-2 !border-slate-300 dark:!border-slate-600 hover:!border-blue-500 dark:hover:!border-blue-400 !bg-white dark:!bg-slate-800 !text-slate-700 dark:!text-slate-300 hover:!text-blue-600 dark:hover:!text-blue-400 !shadow-md hover:!shadow-lg transition-all duration-300"
+							@click="$emit('open-folder-requested')"
+							class="!h-12 !text-base !font-medium !rounded-xl !shadow-lg hover:!shadow-xl transition-all duration-300"
 						>
-							<Icon icon="material-symbols:add" class="mr-2 text-lg" />
-							新建标签页
+							<Icon icon="material-symbols:folder-open" class="mr-2 text-lg" />
+							打开文件夹
 						</el-button>
 					</div>
 				</div>
@@ -830,6 +831,7 @@ interface Emits {
 	(e: "file-saved", filePath: string): void;
 	(e: "save-as-requested", content: string): void;
 	(e: "open-file-requested"): void;
+	(e: "open-folder-requested"): void;
 	(e: "new-tab-requested"): void;
 	(e: "clear-cache-requested"): void;
 }
