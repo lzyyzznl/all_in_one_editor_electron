@@ -488,7 +488,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from "vue";
 import { Icon } from "@iconify/vue";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ElMessageBox, ElNotification } from "element-plus";
 import VueDraggable from "vuedraggable";
 import FileTree from "./FileTree.vue";
 import MdEditor from "./MdEditor.vue";
@@ -605,7 +605,9 @@ const isResizing = ref(false);
 const isCollapsed = ref(false);
 
 // 计算属性
-const apiSupported = computed(() => typeof window !== "undefined" && window.electronAPI);
+const apiSupported = computed(
+	() => typeof window !== "undefined" && window.electronAPI
+);
 
 // 页签持久化相关
 const TAB_DB_NAME = "file-browser-tabs-db";
@@ -712,10 +714,7 @@ const getTabDisplayTitle = (tab: TabItem): string => {
 };
 
 // 处理文件选择
-const handleSelectFile = async (
-	filePath: string,
-	node: FileTreeNode
-) => {
+const handleSelectFile = async (filePath: string, node: FileTreeNode) => {
 	console.log("处理文件选择:", {
 		filePath: filePath,
 		nodeLabel: node.label,
@@ -780,18 +779,18 @@ const handleOpenFileRequested = async () => {
 	try {
 		// 使用Electron API打开文件
 		const result = await window.electronAPI.showOpenDialog({
-			properties: ['openFile'],
-			title: '打开文件',
+			properties: ["openFile"],
+			title: "打开文件",
 			filters: [
-				{ name: 'Markdown文件', extensions: ['md', 'markdown'] },
-				{ name: '文本文件', extensions: ['txt'] },
-				{ name: 'JSON文件', extensions: ['json'] },
-				{ name: 'JavaScript文件', extensions: ['js'] },
-				{ name: 'TypeScript文件', extensions: ['ts'] },
-				{ name: 'Vue文件', extensions: ['vue'] },
-				{ name: 'HTML文件', extensions: ['html'] },
-				{ name: 'CSS文件', extensions: ['css'] },
-				{ name: '所有文件', extensions: ['*'] },
+				{ name: "Markdown文件", extensions: ["md", "markdown"] },
+				{ name: "文本文件", extensions: ["txt"] },
+				{ name: "JSON文件", extensions: ["json"] },
+				{ name: "JavaScript文件", extensions: ["js"] },
+				{ name: "TypeScript文件", extensions: ["ts"] },
+				{ name: "Vue文件", extensions: ["vue"] },
+				{ name: "HTML文件", extensions: ["html"] },
+				{ name: "CSS文件", extensions: ["css"] },
+				{ name: "所有文件", extensions: ["*"] },
 			],
 		});
 
@@ -814,7 +813,14 @@ const handleOpenFileRequested = async () => {
 		}
 	} catch (error: any) {
 		console.error("打开文件失败:", error);
-		ElMessage.error("打开文件失败: " + (error as Error).message);
+		ElNotification({
+			title: "打开文件失败",
+			message: (error as Error).message,
+			type: "error",
+			position: "bottom-right",
+			duration: 5000,
+			offset: 50,
+		});
 	}
 };
 
@@ -823,8 +829,8 @@ const handleOpenFolderRequested = async () => {
 	try {
 		// 使用Electron API打开文件夹
 		const result = await window.electronAPI.showOpenDialog({
-			properties: ['openDirectory'],
-			title: '选择文件夹',
+			properties: ["openDirectory"],
+			title: "选择文件夹",
 		});
 
 		if (!result.canceled && result.filePaths && result.filePaths.length > 0) {
@@ -833,13 +839,27 @@ const handleOpenFolderRequested = async () => {
 
 			// 设置根目录路径，触发文件树加载
 			rootDirectoryPath.value = folderPath;
-			
+
 			// 通知用户文件夹已打开
-			ElMessage.success(`已打开文件夹: ${folderPath.split(/[\/\\]/).pop()}`);
+			ElNotification({
+				title: "文件夹已打开",
+				message: `已打开文件夹: ${folderPath.split(/[\/\\]/).pop()}`,
+				type: "success",
+				position: "bottom-right",
+				duration: 3000,
+				offset: 50,
+			});
 		}
 	} catch (error: any) {
 		console.error("打开文件夹失败:", error);
-		ElMessage.error("打开文件夹失败: " + (error as Error).message);
+		ElNotification({
+			title: "打开文件夹失败",
+			message: (error as Error).message,
+			type: "error",
+			position: "bottom-right",
+			duration: 5000,
+			offset: 50,
+		});
 	}
 };
 
@@ -1200,10 +1220,7 @@ const onDragEnd = async () => {
 };
 
 // 处理目录选择
-const handleSelectDirectory = (
-	dirPath: string,
-	node: FileTreeNode
-) => {
+const handleSelectDirectory = (dirPath: string, node: FileTreeNode) => {
 	console.log("选择目录:", node.label);
 };
 
@@ -1259,7 +1276,14 @@ const handleFileDeleted = (deletedNode: FileTreeNode) => {
 	});
 
 	if (affectedTabs.length > 0) {
-		ElMessage.info(`已将 ${affectedTabs.length} 个相关标签页转换为新建状态`);
+		ElNotification({
+			title: "标签页状态更新",
+			message: `已将 ${affectedTabs.length} 个相关标签页转换为新建状态`,
+			type: "info",
+			position: "bottom-right",
+			duration: 3000,
+			offset: 50,
+		});
 		saveTabsState();
 	}
 };
@@ -1276,8 +1300,7 @@ const handleFileUpdated = (oldNode: FileTreeNode, newNode: FileTreeNode) => {
 		return (
 			tab.fullPath === oldNode.path ||
 			tab.fileNode.id === oldNode.id ||
-			(tab.fileNode.label === oldNode.label &&
-				tab.filePath === oldNode.path)
+			(tab.fileNode.label === oldNode.label && tab.filePath === oldNode.path)
 		);
 	});
 
@@ -1296,7 +1319,14 @@ const handleFileUpdated = (oldNode: FileTreeNode, newNode: FileTreeNode) => {
 	});
 
 	if (affectedTabs.length > 0) {
-		ElMessage.info(`已更新 ${affectedTabs.length} 个标签页的文件信息`);
+		ElNotification({
+			title: "文件信息更新",
+			message: `已更新 ${affectedTabs.length} 个标签页的文件信息`,
+			type: "info",
+			position: "bottom-right",
+			duration: 3000,
+			offset: 50,
+		});
 		saveTabsState();
 	}
 };
@@ -1420,7 +1450,14 @@ const getCurrentVirtualTabId = () => {
 // 处理另存为请求
 const handleSaveAsRequested = async (content: string) => {
 	if (!rootDirectoryPath.value) {
-		ElMessage.error("请先选择文件夹，然后再进行保存操作");
+		ElNotification({
+			title: "保存失败",
+			message: "请先选择文件夹，然后再进行保存操作",
+			type: "error",
+			position: "bottom-right",
+			duration: 5000,
+			offset: 50,
+		});
 		return;
 	}
 
@@ -1486,7 +1523,9 @@ const getFolderTreeData = async () => {
 			const result = await readDirectory(dirPath);
 			for (const item of result) {
 				if (item.isDirectory) {
-					const fullPath = relativePath ? `${relativePath}/${item.label}` : item.label;
+					const fullPath = relativePath
+						? `${relativePath}/${item.label}`
+						: item.label;
 					const folderNode = {
 						id: fullPath,
 						label: item.label,
@@ -1517,7 +1556,14 @@ const getFolderTreeData = async () => {
 // 选择保存目录
 const selectSaveDirectory = async () => {
 	if (!rootDirectoryPath.value) {
-		ElMessage.error("请先选择根目录");
+		ElNotification({
+			title: "操作失败",
+			message: "请先选择根目录",
+			type: "error",
+			position: "bottom-right",
+			duration: 5000,
+			offset: 50,
+		});
 		return;
 	}
 
@@ -1526,7 +1572,14 @@ const selectSaveDirectory = async () => {
 		showFolderSelector.value = true;
 	} catch (error) {
 		console.error("获取文件夹列表失败:", error);
-		ElMessage.error("获取文件夹列表失败");
+		ElNotification({
+			title: "获取文件夹列表失败",
+			message: "无法加载文件夹结构",
+			type: "error",
+			position: "bottom-right",
+			duration: 5000,
+			offset: 50,
+		});
 	}
 };
 
@@ -1536,19 +1589,40 @@ const confirmFolderSelection = (selectedFolder: any) => {
 		saveAsForm.value.targetDirectory = selectedFolder.path;
 		saveAsForm.value.targetPath = selectedFolder.label;
 		showFolderSelector.value = false;
-		ElMessage.success(`已选择目录: ${selectedFolder.label}`);
+		ElNotification({
+			title: "目录选择成功",
+			message: `已选择目录: ${selectedFolder.label}`,
+			type: "success",
+			position: "bottom-right",
+			duration: 3000,
+			offset: 50,
+		});
 	}
 };
 
 // 执行另存为操作
 const saveAsFile = async () => {
 	if (!saveAsForm.value.fileName.trim()) {
-		ElMessage.warning("请输入文件名");
+		ElNotification({
+			title: "输入错误",
+			message: "请输入文件名",
+			type: "warning",
+			position: "bottom-right",
+			duration: 4000,
+			offset: 50,
+		});
 		return;
 	}
 
 	if (!saveAsForm.value.targetDirectory) {
-		ElMessage.error("请选择保存目录");
+		ElNotification({
+			title: "保存失败",
+			message: "请选择保存目录",
+			type: "error",
+			position: "bottom-right",
+			duration: 5000,
+			offset: 50,
+		});
 		return;
 	}
 
@@ -1591,7 +1665,10 @@ const saveAsFile = async () => {
 		}
 
 		// 写入文件
-		const writeResult = await window.electronAPI.writeFile(targetFilePath, saveAsContent.value);
+		const writeResult = await window.electronAPI.writeFile(
+			targetFilePath,
+			saveAsContent.value
+		);
 		if (!writeResult.success) {
 			throw new Error(writeResult.error || "写入文件失败");
 		}
@@ -1624,9 +1701,14 @@ const saveAsFile = async () => {
 			fileModified.value = false;
 		}
 
-		ElMessage.success(
-			`文件 ${fullFileName} 已保存到 ${saveAsForm.value.targetPath}`
-		);
+		ElNotification({
+			title: "文件保存成功",
+			message: `文件 ${fullFileName} 已保存到 ${saveAsForm.value.targetPath}`,
+			type: "success",
+			position: "bottom-right",
+			duration: 3000,
+			offset: 50,
+		});
 		resetSaveAsDialog();
 
 		// 刷新文件树
@@ -1635,7 +1717,14 @@ const saveAsFile = async () => {
 		}
 	} catch (error) {
 		console.error("另存为失败:", error);
-		ElMessage.error("另存为失败: " + (error as Error).message);
+		ElNotification({
+			title: "另存为失败",
+			message: (error as Error).message,
+			type: "error",
+			position: "bottom-right",
+			duration: 5000,
+			offset: 50,
+		});
 	}
 };
 
@@ -1748,25 +1837,25 @@ const setupMenuListeners = () => {
 	if (window.electronAPI) {
 		window.electronAPI.onMenuAction((action: string) => {
 			switch (action) {
-				case 'open-folder':
+				case "open-folder":
 					if (fileTreeRef.value) {
 						fileTreeRef.value.selectRootDirectory();
 					}
 					break;
-				case 'open-file':
+				case "open-file":
 					handleOpenFileRequested();
 					break;
-				case 'new-file':
+				case "new-file":
 					createNewTab();
 					break;
-				case 'save':
+				case "save":
 					if (mdEditorRef.value) {
 						mdEditorRef.value.saveFile();
 					}
 					break;
-				case 'save-as':
+				case "save-as":
 					if (activeTabId.value && mdEditorRef.value) {
-						const content = mdEditorRef.value.getCurrentContent?.() || '';
+						const content = mdEditorRef.value.getCurrentContent?.() || "";
 						handleSaveAsRequested(content);
 					}
 					break;

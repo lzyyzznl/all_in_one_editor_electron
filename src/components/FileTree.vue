@@ -82,7 +82,9 @@
 						class="text-slate-600 dark:text-slate-400 text-sm"
 					/>
 				</div>
-				<span class="truncate font-medium">{{ rootPath.split(/[\/\\]/).pop() || rootPath }}</span>
+				<span class="truncate font-medium">{{
+					rootPath.split(/[\/\\]/).pop() || rootPath
+				}}</span>
 			</div>
 		</div>
 
@@ -652,7 +654,7 @@
 <script setup lang="ts">
 // Iconify Vue 图标导入
 import { Icon } from "@iconify/vue";
-import { ElMessage, ElMessageBox, ElTree } from "element-plus";
+import { ElMessageBox, ElTree, ElNotification } from "element-plus";
 import { nextTick, onMounted, ref, watch } from "vue";
 import {
 	chooseDirectory,
@@ -675,11 +677,7 @@ interface Props {
 interface Emits {
 	(e: "update:modelValue", value: string | null): void;
 	(e: "select-file", filePath: string, node: FileTreeNode): void;
-	(
-		e: "select-directory",
-		dirPath: string,
-		node: FileTreeNode
-	): void;
+	(e: "select-directory", dirPath: string, node: FileTreeNode): void;
 	(e: "file-deleted", node: FileTreeNode): void;
 	(e: "file-updated", oldNode: FileTreeNode, newNode: FileTreeNode): void;
 }
@@ -756,11 +754,25 @@ const selectRootDirectory = async () => {
 		emit("update:modelValue", dirPath);
 		await loadFullDirectoryTree();
 		await saveDirectoryHistory(dirPath);
-		ElMessage.success("目录选择成功");
+		ElNotification({
+			title: "目录选择成功",
+			message: "已成功选择工作目录",
+			type: "success",
+			position: "bottom-right",
+			duration: 3000,
+			offset: 50,
+		});
 	} catch (error) {
 		console.error("选择目录失败:", error);
 		if (error instanceof Error && error.name !== "AbortError") {
-			ElMessage.error("选择目录失败: " + error.message);
+			ElNotification({
+				title: "选择目录失败",
+				message: error.message,
+				type: "error",
+				position: "bottom-right",
+				duration: 5000,
+				offset: 50,
+			});
 		}
 	} finally {
 		isLoading.value = false;
@@ -768,7 +780,10 @@ const selectRootDirectory = async () => {
 };
 
 // 构建文件树
-const buildTree = async (dirPath: string, parentPath: string = ""): Promise<FileTreeNode[]> => {
+const buildTree = async (
+	dirPath: string,
+	parentPath: string = ""
+): Promise<FileTreeNode[]> => {
 	const items: FileTreeNode[] = [];
 
 	try {
@@ -776,7 +791,9 @@ const buildTree = async (dirPath: string, parentPath: string = ""): Promise<File
 		const result = await readDirectory(dirPath);
 		console.log("buildTree: 读取到的项目数量", result.length);
 		for (const item of result) {
-			const currentPath = parentPath ? `${parentPath}/${item.label}` : item.label;
+			const currentPath = parentPath
+				? `${parentPath}/${item.label}`
+				: item.label;
 			const node: FileTreeNode = {
 				id: currentPath,
 				label: item.label,
@@ -862,7 +879,14 @@ const loadFullDirectoryTree = async () => {
 		);
 	} catch (error) {
 		console.error("加载目录树失败:", error);
-		ElMessage.error("加载目录树失败");
+		ElNotification({
+			title: "加载目录树失败",
+			message: "无法加载文件夹结构",
+			type: "error",
+			position: "bottom-right",
+			duration: 5000,
+			offset: 50,
+		});
 	} finally {
 		isLoading.value = false;
 	}
@@ -1024,17 +1048,6 @@ const loadDirectoryHistory = async () => {
 				localStorage.removeItem("file-browser-last-directory");
 			}
 		}
-
-		if (daysDiff <= 7) {
-			const displayPath = directoryInfo.path || directoryInfo.name;
-			ElMessage({
-				message: `📁 您${timeText}使用了目录：${displayPath}，请重新选择目录`,
-				type: "info",
-				duration: 4000,
-				showClose: true,
-			});
-		}
-
 		return false;
 	} catch (error) {
 		console.error("加载目录历史失败:", error);
@@ -1101,7 +1114,14 @@ const handleNodeClick = (data: FileTreeNode) => {
 			});
 			emit("select-file", data.path, data);
 		} else {
-			ElMessage.warning(`不支持的文件类型: ${data.label}`);
+			ElNotification({
+				title: "文件类型不支持",
+				message: `不支持的文件类型: ${data.label}`,
+				type: "warning",
+				position: "bottom-right",
+				duration: 4000,
+				offset: 50,
+			});
 		}
 	} else if (data.isDirectory && data.path) {
 		console.log("发射select-directory事件:", data.label);
@@ -1168,10 +1188,24 @@ const refreshCurrentDirectory = async () => {
 	try {
 		isRefreshing.value = true;
 		await loadFullDirectoryTree();
-		ElMessage.success("目录已刷新");
+		ElNotification({
+			title: "刷新成功",
+			message: "目录已刷新",
+			type: "success",
+			position: "bottom-right",
+			duration: 3000,
+			offset: 50,
+		});
 	} catch (error) {
 		console.error("刷新目录失败:", error);
-		ElMessage.error("刷新目录失败");
+		ElNotification({
+			title: "刷新失败",
+			message: "刷新目录失败",
+			type: "error",
+			position: "bottom-right",
+			duration: 5000,
+			offset: 50,
+		});
 	} finally {
 		isRefreshing.value = false;
 	}
@@ -1277,14 +1311,28 @@ const resetRenameDialog = () => {
 // 创建文件
 const createFile = async () => {
 	if (!createFileForm.value.fileName.trim()) {
-		ElMessage.warning("请输入文件名");
+		ElNotification({
+			title: "输入错误",
+			message: "请输入文件名",
+			type: "warning",
+			position: "bottom-right",
+			duration: 4000,
+			offset: 50,
+		});
 		return;
 	}
 
 	// 使用当前创建目录或根目录
 	const targetDirectory = currentCreateDirectory.value || rootPath.value;
 	if (!targetDirectory) {
-		ElMessage.error("没有选择目标目录");
+		ElNotification({
+			title: "创建失败",
+			message: "没有选择目标目录",
+			type: "error",
+			position: "bottom-right",
+			duration: 5000,
+			offset: 50,
+		});
 		return;
 	}
 
@@ -1306,26 +1354,54 @@ const createFile = async () => {
 			? `在 "${currentCreateNode.value.label}" ${currentCreateNode.value.isDirectory ? "文件夹内" : "所在目录"}`
 			: "在根目录";
 
-		ElMessage.success(`文件 ${fullFileName} ${locationInfo}创建成功`);
+		ElNotification({
+			title: "文件创建成功",
+			message: `文件 ${fullFileName} ${locationInfo}创建成功`,
+			type: "success",
+			position: "bottom-right",
+			duration: 3000,
+			offset: 50,
+		});
 		resetCreateFileDialog();
 		await loadFullDirectoryTree();
 	} catch (error) {
 		console.error("创建文件失败:", error);
-		ElMessage.error("创建文件失败: " + (error as Error).message);
+		ElNotification({
+			title: "创建文件失败",
+			message: (error as Error).message,
+			type: "error",
+			position: "bottom-right",
+			duration: 5000,
+			offset: 50,
+		});
 	}
 };
 
 // 创建文件夹
 const createFolder = async () => {
 	if (!createFolderForm.value.folderName.trim()) {
-		ElMessage.warning("请输入文件夹名");
+		ElNotification({
+			title: "输入错误",
+			message: "请输入文件夹名",
+			type: "warning",
+			position: "bottom-right",
+			duration: 4000,
+			offset: 50,
+		});
 		return;
 	}
 
 	// 使用当前创建目录或根目录
 	const targetDirectory = currentCreateDirectory.value || rootPath.value;
 	if (!targetDirectory) {
-		ElMessage.error("没有选择目标目录");
+		ElNotification({
+			title: "创建失败",
+			message: "没有选择目标目录",
+			type: "error",
+			position: "bottom-right",
+			duration: 5000,
+			offset: 50,
+		});
 		return;
 	}
 
@@ -1342,24 +1418,52 @@ const createFolder = async () => {
 			? `在 "${currentCreateNode.value.label}" ${currentCreateNode.value.isDirectory ? "文件夹内" : "所在目录"}`
 			: "在根目录";
 
-		ElMessage.success(`文件夹 ${folderName} ${locationInfo}创建成功`);
+		ElNotification({
+			title: "文件夹创建成功",
+			message: `文件夹 ${folderName} ${locationInfo}创建成功`,
+			type: "success",
+			position: "bottom-right",
+			duration: 3000,
+			offset: 50,
+		});
 		resetCreateFolderDialog();
 		await loadFullDirectoryTree();
 	} catch (error) {
 		console.error("创建文件夹失败:", error);
-		ElMessage.error("创建文件夹失败: " + (error as Error).message);
+		ElNotification({
+			title: "创建文件夹失败",
+			message: (error as Error).message,
+			type: "error",
+			position: "bottom-right",
+			duration: 5000,
+			offset: 50,
+		});
 	}
 };
 
 // 重命名文件或文件夹
 const renameItem = async () => {
 	if (!renameForm.value.targetNode || !renameForm.value.newName.trim()) {
-		ElMessage.warning("请输入新名称");
+		ElNotification({
+			title: "输入错误",
+			message: "请输入新名称",
+			type: "warning",
+			position: "bottom-right",
+			duration: 4000,
+			offset: 50,
+		});
 		return;
 	}
 
 	if (!rootPath.value) {
-		ElMessage.error("没有选择根目录");
+		ElNotification({
+			title: "重命名失败",
+			message: "没有选择根目录",
+			type: "error",
+			position: "bottom-right",
+			duration: 5000,
+			offset: 50,
+		});
 		return;
 	}
 
@@ -1369,14 +1473,28 @@ const renameItem = async () => {
 
 	// 检查新名称是否与旧名称相同
 	if (newName === oldName) {
-		ElMessage.warning("新名称与原名称相同");
+		ElNotification({
+			title: "重命名提示",
+			message: "新名称与原名称相同",
+			type: "warning",
+			position: "bottom-right",
+			duration: 4000,
+			offset: 50,
+		});
 		resetRenameDialog();
 		return;
 	}
 
 	try {
 		if (targetNode.isDirectory) {
-			ElMessage.warning("文件夹重命名功能暂未实现，需要递归复制所有子项");
+			ElNotification({
+				title: "功能暂未实现",
+				message: "文件夹重命名功能暂未实现，需要递归复制所有子项",
+				type: "warning",
+				position: "bottom-right",
+				duration: 4000,
+				offset: 50,
+			});
 		} else {
 			// 构建旧文件路径和新文件路径
 			const oldPath = targetNode.path || `${rootPath.value}/${oldName}`;
@@ -1394,13 +1512,27 @@ const renameItem = async () => {
 			// 发射文件更新事件，通知父组件
 			emit("file-updated", targetNode, updatedNode);
 
-			ElMessage.success(`文件重命名成功: ${oldName} → ${newName}`);
+			ElNotification({
+				title: "重命名成功",
+				message: `文件重命名成功: ${oldName} → ${newName}`,
+				type: "success",
+				position: "bottom-right",
+				duration: 3000,
+				offset: 50,
+			});
 			resetRenameDialog();
 			await loadFullDirectoryTree();
 		}
 	} catch (error) {
 		console.error("重命名失败:", error);
-		ElMessage.error("重命名失败: " + (error as Error).message);
+		ElNotification({
+			title: "重命名失败",
+			message: (error as Error).message,
+			type: "error",
+			position: "bottom-right",
+			duration: 5000,
+			offset: 50,
+		});
 	}
 };
 
@@ -1429,7 +1561,14 @@ const confirmDeleteItem = async (node: FileTreeNode) => {
 const deleteItem = async (node: FileTreeNode) => {
 	try {
 		if (!rootPath.value || !node.path) {
-			ElMessage.error("无法删除：缺少文件路径");
+			ElNotification({
+				title: "删除失败",
+				message: "无法删除：缺少文件路径",
+				type: "error",
+				position: "bottom-right",
+				duration: 5000,
+				offset: 50,
+			});
 			return;
 		}
 
@@ -1439,9 +1578,14 @@ const deleteItem = async (node: FileTreeNode) => {
 		// 使用Electron API删除文件或文件夹
 		await deleteFile(node.path);
 
-		ElMessage.success(
-			`${isDirectory ? "文件夹" : "文件"} "${itemName}" 删除成功`
-		);
+		ElNotification({
+			title: "删除成功",
+			message: `${isDirectory ? "文件夹" : "文件"} "${itemName}" 删除成功`,
+			type: "success",
+			position: "bottom-right",
+			duration: 3000,
+			offset: 50,
+		});
 
 		// 发射文件删除事件，通知父组件
 		emit("file-deleted", node);
@@ -1460,13 +1604,41 @@ const deleteItem = async (node: FileTreeNode) => {
 
 		// 根据错误类型提供更友好的提示
 		if (errorMessage.includes("NotAllowedError")) {
-			ElMessage.error("删除失败：没有权限访问该文件");
+			ElNotification({
+				title: "删除失败",
+				message: "没有权限访问该文件",
+				type: "error",
+				position: "bottom-right",
+				duration: 5000,
+				offset: 50,
+			});
 		} else if (errorMessage.includes("NotFoundError")) {
-			ElMessage.error("删除失败：文件或文件夹不存在");
+			ElNotification({
+				title: "删除失败",
+				message: "文件或文件夹不存在",
+				type: "error",
+				position: "bottom-right",
+				duration: 5000,
+				offset: 50,
+			});
 		} else if (errorMessage.includes("InvalidModificationError")) {
-			ElMessage.error("删除失败：文件夹不为空，请先删除其中的内容");
+			ElNotification({
+				title: "删除失败",
+				message: "文件夹不为空，请先删除其中的内容",
+				type: "error",
+				position: "bottom-right",
+				duration: 5000,
+				offset: 50,
+			});
 		} else {
-			ElMessage.error("删除失败: " + errorMessage);
+			ElNotification({
+				title: "删除失败",
+				message: errorMessage,
+				type: "error",
+				position: "bottom-right",
+				duration: 5000,
+				offset: 50,
+			});
 		}
 	}
 };
@@ -1488,7 +1660,7 @@ const getTargetDirectoryPath = (node: FileTreeNode): string | null => {
 		// 如果是文件，需要获取其父目录的路径
 		if (node.path) {
 			const pathParts = node.path.split(/[\/\\]/);
-			return pathParts.slice(0, -1).join('/');
+			return pathParts.slice(0, -1).join("/");
 		}
 		return rootPath.value;
 	}
@@ -1499,12 +1671,23 @@ const handleCreateCommand = async (command: string, node: FileTreeNode) => {
 	try {
 		const targetDirectory = getTargetDirectoryPath(node);
 		if (!targetDirectory) {
-			ElMessage.error("无法获取目标目录");
+			ElNotification({
+				title: "操作失败",
+				message: "无法获取目标目录",
+				type: "error",
+				position: "bottom-right",
+				duration: 5000,
+				offset: 50,
+			});
 			return;
 		}
 
 		// 设置当前操作的目录
-		currentCreateDirectory.value = node.isDirectory ? node.path : (node.path ? node.path.split('/').slice(0, -1).join('/') : rootPath.value);
+		currentCreateDirectory.value = node.isDirectory
+			? node.path
+			: node.path
+				? node.path.split("/").slice(0, -1).join("/")
+				: rootPath.value;
 		currentCreateNode.value = node;
 
 		if (command === "file") {
@@ -1514,7 +1697,14 @@ const handleCreateCommand = async (command: string, node: FileTreeNode) => {
 		}
 	} catch (error) {
 		console.error("获取目标目录失败:", error);
-		ElMessage.error("获取目标目录失败: " + (error as Error).message);
+		ElNotification({
+			title: "获取目标目录失败",
+			message: (error as Error).message,
+			type: "error",
+			position: "bottom-right",
+			duration: 5000,
+			offset: 50,
+		});
 	}
 };
 
@@ -1590,10 +1780,13 @@ onMounted(async () => {
 		}
 	} catch (error) {
 		console.error("加载历史目录时出错:", error);
-		ElMessage({
+		ElNotification({
+			title: "加载历史目录失败",
 			message: "加载历史目录失败，请手动选择目录",
 			type: "warning",
-			duration: 3000,
+			position: "bottom-right",
+			duration: 4000,
+			offset: 50,
 		});
 	} finally {
 		isLoading.value = false;

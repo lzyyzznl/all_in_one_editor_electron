@@ -787,7 +787,7 @@ import {
 } from "vue";
 
 // Element Plus 组件导入
-import { ElMessage, ElMessageBox, ElNotification } from "element-plus";
+import { ElMessageBox, ElNotification } from "element-plus";
 
 // Iconify Vue 图标导入
 import { Icon } from "@iconify/vue";
@@ -865,7 +865,11 @@ let autoSaveTimer: NodeJS.Timeout | null = null;
 
 // 当前编辑的文件名
 const fileName = computed(() => {
-	return props.fileNode?.label || (props.filePath ? props.filePath.split(/[\/\\]/).pop() : "") || "";
+	return (
+		props.fileNode?.label ||
+		(props.filePath ? props.filePath.split(/[\/\\]/).pop() : "") ||
+		""
+	);
 });
 
 // 初始化Tiptap编辑器实例
@@ -1034,7 +1038,14 @@ const loadFileContent = async () => {
 		});
 	} catch (error) {
 		console.error("MdEditor: 加载文件失败", error);
-		ElMessage.error("加载文件失败: " + (error as Error).message);
+		ElNotification({
+			title: "加载文件失败",
+			message: (error as Error).message,
+			type: "error",
+			position: "bottom-right",
+			duration: 5000,
+			offset: 50,
+		});
 	} finally {
 		isLoading.value = false;
 	}
@@ -1101,7 +1112,14 @@ const saveFile = async () => {
 			duration: 2000,
 		});
 	} catch (error) {
-		ElMessage.error("保存文件失败: " + (error as Error).message);
+		ElNotification({
+			title: "保存文件失败",
+			message: (error as Error).message,
+			type: "error",
+			position: "bottom-right",
+			duration: 5000,
+			offset: 50,
+		});
 	} finally {
 		isSaving.value = false;
 	}
@@ -1123,7 +1141,14 @@ const saveAsFile = async () => {
 		// 发射事件让父组件处理另存为逻辑
 		emit("save-as-requested", content);
 	} catch (error) {
-		ElMessage.error("获取内容失败: " + (error as Error).message);
+		ElNotification({
+			title: "获取内容失败",
+			message: (error as Error).message,
+			type: "error",
+			position: "bottom-right",
+			duration: 5000,
+			offset: 50,
+		});
 	} finally {
 		isSaving.value = false;
 	}
@@ -1224,7 +1249,14 @@ const convertCodeBlocks = () => {
 
 const exportMarkdown = () => {
 	if (!editor.value) {
-		ElMessage.error("编辑器未初始化");
+		ElNotification({
+			title: "导出失败",
+			message: "编辑器未初始化",
+			type: "error",
+			position: "bottom-right",
+			duration: 5000,
+			offset: 50,
+		});
 		return;
 	}
 
@@ -1246,7 +1278,14 @@ const exportMarkdown = () => {
 	}
 
 	if (!content || content.trim() === "") {
-		ElMessage.warning("没有内容可以导出");
+		ElNotification({
+			title: "导出提示",
+			message: "没有内容可以导出",
+			type: "warning",
+			position: "bottom-right",
+			duration: 4000,
+			offset: 50,
+		});
 		return;
 	}
 
@@ -1268,29 +1307,53 @@ const exportMarkdown = () => {
 	document.body.removeChild(a);
 	URL.revokeObjectURL(url);
 
-	ElMessage.success("Markdown文件导出成功");
+	ElNotification({
+		title: "导出成功",
+		message: "Markdown文件导出成功",
+		type: "success",
+		position: "bottom-right",
+		duration: 3000,
+		offset: 50,
+	});
 };
 
 // 导出为图片（支持长图导出）
 const exportImage = async () => {
 	const editorContent = document.querySelector(".ProseMirror");
 	if (!editorContent) {
-		ElMessage.error("未找到编辑器内容区域");
+		ElNotification({
+			title: "导出失败",
+			message: "未找到编辑器内容区域",
+			type: "error",
+			position: "bottom-right",
+			duration: 5000,
+			offset: 50,
+		});
 		return;
 	}
 
 	// 获取滚动容器（EditorContent的容器）
 	const scrollContainer = editorContent.parentElement;
 	if (!scrollContainer) {
-		ElMessage.error("未找到滚动容器");
+		ElNotification({
+			title: "导出失败",
+			message: "未找到滚动容器",
+			type: "error",
+			position: "bottom-right",
+			duration: 5000,
+			offset: 50,
+		});
 		return;
 	}
 
 	// 显示加载提示
-	const loadingMessage = ElMessage({
+	const loadingNotification = ElNotification({
+		title: "正在处理",
 		message: "正在生成图片，请稍候...",
 		type: "info",
+		position: "bottom-right",
 		duration: 0, // 不自动关闭
+		offset: 50,
 	});
 
 	// 保存原始样式
@@ -1365,7 +1428,14 @@ const exportImage = async () => {
 		canvas.toBlob(
 			(blob) => {
 				if (!blob) {
-					ElMessage.error("生成图片失败");
+					ElNotification({
+						title: "生成图片失败",
+						message: "无法生成图片文件",
+						type: "error",
+						position: "bottom-right",
+						duration: 5000,
+						offset: 50,
+					});
 					return;
 				}
 
@@ -1378,14 +1448,28 @@ const exportImage = async () => {
 				document.body.removeChild(a);
 				URL.revokeObjectURL(url);
 
-				ElMessage.success("高质量图片导出成功");
+				ElNotification({
+					title: "导出成功",
+					message: "高质量图片导出成功",
+					type: "success",
+					position: "bottom-right",
+					duration: 3000,
+					offset: 50,
+				});
 			},
 			"image/png",
 			1.0
 		); // 最高图片质量 - 无损压缩
 	} catch (error) {
 		console.error("导出图片失败:", error);
-		ElMessage.error("导出图片失败: " + (error as Error).message);
+		ElNotification({
+			title: "导出图片失败",
+			message: (error as Error).message,
+			type: "error",
+			position: "bottom-right",
+			duration: 5000,
+			offset: 50,
+		});
 	} finally {
 		// 恢复容器原始样式
 		scrollContainer.style.overflow = originalContainerStyles.overflow;
@@ -1397,7 +1481,7 @@ const exportImage = async () => {
 		scrollContainer.style.boxSizing = originalContainerStyles.boxSizing;
 
 		// 关闭加载提示
-		loadingMessage.close();
+		loadingNotification.close();
 	}
 };
 
