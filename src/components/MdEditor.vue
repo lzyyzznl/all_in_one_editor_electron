@@ -9,14 +9,14 @@
 			<div class="border-b border-slate-100 dark:border-slate-600">
 				<!-- 左侧：Tiptap编辑按钮组（响应式换行布局） -->
 				<div class="w-full">
-					<div class="flex flex-wrap items-center gap-3 px-4 py-3">
+					<div class="flex flex-wrap items-center gap-2 px-3 py-2">
 						<!-- 基础文本格式化工具组 -->
 						<div class="flex items-center gap-1">
 							<el-button
 								size="default"
 								@click="editor?.chain().focus().toggleBold().run()"
 								title="粗体"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
 								:class="{
 									'!bg-gradient-to-r !from-blue-600 !to-purple-600 !border-none !text-white !shadow-md':
 										editor?.isActive('bold'),
@@ -24,13 +24,13 @@
 										!editor?.isActive('bold'),
 								}"
 							>
-								<Icon icon="material-symbols:format-bold" class="text-lg" />
+								<Icon icon="material-symbols:format-bold" class="text-base" />
 							</el-button>
 							<el-button
 								size="default"
 								@click="editor?.chain().focus().toggleItalic().run()"
 								title="斜体"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
 								:class="{
 									'!bg-gradient-to-r !from-blue-600 !to-purple-600 !border-none !text-white !shadow-md':
 										editor?.isActive('italic'),
@@ -38,25 +38,25 @@
 										!editor?.isActive('italic'),
 								}"
 							>
-								<Icon icon="material-symbols:format-italic" class="text-lg" />
+								<Icon icon="material-symbols:format-italic" class="text-base" />
 							</el-button>
 							<el-button
 								size="default"
 								:type="editor?.isActive('strike') ? 'primary' : 'default'"
 								@click="editor?.chain().focus().toggleStrike().run()"
 								title="删除线"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
 							>
 								<Icon
 									icon="material-symbols:format-strikethrough"
-									class="text-lg"
+									class="text-base"
 								/>
 							</el-button>
 							<el-button
 								size="default"
 								@click="editor?.chain().focus().toggleUnderline().run()"
 								title="下划线"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
 								:class="{
 									'!bg-gradient-to-r !from-blue-600 !to-purple-600 !border-none !text-white !shadow-md':
 										editor?.isActive('underline'),
@@ -66,7 +66,7 @@
 							>
 								<Icon
 									icon="material-symbols:format-underlined"
-									class="text-lg"
+									class="text-base"
 								/>
 							</el-button>
 							<el-button
@@ -74,9 +74,9 @@
 								:type="editor?.isActive('code') ? 'primary' : 'default'"
 								@click="editor?.chain().focus().toggleCode().run()"
 								title="行内代码"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
 							>
-								<Icon icon="material-symbols:code" class="text-lg" />
+								<Icon icon="material-symbols:code" class="text-base" />
 							</el-button>
 						</div>
 
@@ -87,7 +87,7 @@
 						<el-dropdown trigger="click">
 							<el-button
 								size="default"
-								class="!rounded-md !shadow-sm transition-all duration-200 !min-w-16 !h-9 !px-2"
+								class="!rounded-md !shadow-sm transition-all duration-200 !min-w-14 !h-7 !px-2"
 								title="标题样式"
 							>
 								<div class="flex items-center gap-1">
@@ -147,11 +147,11 @@
 								:type="editor?.isActive('bulletList') ? 'primary' : 'default'"
 								@click="editor?.chain().focus().toggleBulletList().run()"
 								title="无序列表"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
 							>
 								<Icon
 									icon="material-symbols:format-list-bulleted"
-									class="text-lg"
+									class="text-base"
 								/>
 							</el-button>
 							<el-button
@@ -159,11 +159,11 @@
 								:type="editor?.isActive('orderedList') ? 'primary' : 'default'"
 								@click="editor?.chain().focus().toggleOrderedList().run()"
 								title="有序列表"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
 							>
 								<Icon
 									icon="material-symbols:format-list-numbered"
-									class="text-lg"
+									class="text-base"
 								/>
 							</el-button>
 							<el-button
@@ -171,9 +171,9 @@
 								:type="editor?.isActive('taskList') ? 'primary' : 'default'"
 								@click="editor?.chain().focus().toggleTaskList().run()"
 								title="任务列表"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
 							>
-								<Icon icon="material-symbols:checklist" class="text-lg" />
+								<Icon icon="material-symbols:checklist" class="text-base" />
 							</el-button>
 						</div>
 
@@ -187,26 +187,26 @@
 								:type="editor?.isActive('blockquote') ? 'primary' : 'default'"
 								@click="editor?.chain().focus().toggleBlockquote().run()"
 								title="引用"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
 							>
-								<Icon icon="material-symbols:format-quote" class="text-lg" />
+								<Icon icon="material-symbols:format-quote" class="text-base" />
 							</el-button>
 							<el-button
 								size="default"
 								:type="editor?.isActive('codeBlock') ? 'primary' : 'default'"
 								@click="editor?.chain().focus().toggleCodeBlock().run()"
 								title="代码块"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
 							>
-								<Icon icon="material-symbols:code-blocks" class="text-lg" />
+								<Icon icon="material-symbols:code-blocks" class="text-base" />
 							</el-button>
 							<el-button
 								size="default"
 								@click="insertDetails"
 								title="插入折叠区域"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
 							>
-								<Icon icon="material-symbols:expand-more" class="text-lg" />
+								<Icon icon="material-symbols:expand-more" class="text-base" />
 							</el-button>
 						</div>
 
@@ -225,33 +225,36 @@
 										.run()
 								"
 								title="插入表格"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
 							>
-								<Icon icon="material-symbols:table" class="text-lg" />
+								<Icon icon="material-symbols:table" class="text-base" />
 							</el-button>
 							<el-button
 								size="default"
 								@click="insertMermaidChart"
 								title="插入Mermaid"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
 							>
-								<Icon icon="material-symbols:insert-chart" class="text-lg" />
+								<Icon icon="material-symbols:insert-chart" class="text-base" />
 							</el-button>
 							<el-button
 								size="default"
 								@click="editor?.chain().focus().setHorizontalRule().run()"
 								title="分割线"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
 							>
-								<Icon icon="material-symbols:horizontal-rule" class="text-lg" />
+								<Icon
+									icon="material-symbols:horizontal-rule"
+									class="text-base"
+								/>
 							</el-button>
 							<el-button
 								size="default"
 								@click="convertCodeBlocks"
 								title="转换代码块语法 (``` ↔ :::)"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
 							>
-								<Icon icon="material-symbols:transform" class="text-lg" />
+								<Icon icon="material-symbols:transform" class="text-base" />
 							</el-button>
 						</div>
 
@@ -264,18 +267,18 @@
 								@click="editor?.chain().focus().undo().run()"
 								:disabled="!editor?.can().undo()"
 								title="撤销"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
 							>
-								<Icon icon="material-symbols:undo" class="text-lg" />
+								<Icon icon="material-symbols:undo" class="text-base" />
 							</el-button>
 							<el-button
 								size="default"
 								@click="editor?.chain().focus().redo().run()"
 								:disabled="!editor?.can().redo()"
 								title="重做"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
 							>
-								<Icon icon="material-symbols:redo" class="text-lg" />
+								<Icon icon="material-symbols:redo" class="text-base" />
 							</el-button>
 						</div>
 
@@ -288,17 +291,17 @@
 								size="default"
 								@click="exportMarkdown"
 								title="导出Markdown"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
 							>
-								<Icon icon="material-symbols:description" class="text-lg" />
+								<Icon icon="material-symbols:description" class="text-base" />
 							</el-button>
 							<el-button
 								size="default"
 								@click="exportImage"
 								title="导出为图片"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
 							>
-								<Icon icon="material-symbols:image" class="text-lg" />
+								<Icon icon="material-symbols:image" class="text-base" />
 							</el-button>
 						</div>
 
@@ -313,11 +316,11 @@
 								:disabled="isLoading"
 								title="重新加载"
 								size="default"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
 							>
 								<Icon
 									icon="material-symbols:refresh"
-									class="text-lg"
+									class="text-base"
 									:class="{ 'animate-spin': isLoading }"
 								/>
 							</el-button>
@@ -327,9 +330,9 @@
 								:disabled="isSaving"
 								title="保存文件"
 								size="default"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0 !bg-green-600 hover:!bg-green-700 !text-white !border-green-600"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0 !bg-green-600 hover:!bg-green-700 !text-white !border-green-600"
 							>
-								<Icon icon="material-symbols:save" class="text-lg" />
+								<Icon icon="material-symbols:save" class="text-base" />
 							</el-button>
 							<el-button
 								v-if="isVirtual"
@@ -337,9 +340,9 @@
 								:disabled="isSaving"
 								title="另存为文件"
 								size="default"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0 !bg-blue-600 hover:!bg-blue-700 !text-white !border-blue-600"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0 !bg-blue-600 hover:!bg-blue-700 !text-white !border-blue-600"
 							>
-								<Icon icon="material-symbols:save-as" class="text-lg" />
+								<Icon icon="material-symbols:save-as" class="text-base" />
 							</el-button>
 						</div>
 
@@ -357,9 +360,9 @@
 								"
 								size="default"
 								title="富文本模式"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
 							>
-								<Icon icon="material-symbols:palette" class="text-lg" />
+								<Icon icon="material-symbols:palette" class="text-base" />
 							</el-button>
 							<el-button
 								@click="toggleEditorMode('split')"
@@ -370,9 +373,9 @@
 								"
 								size="default"
 								title="分屏模式"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
 							>
-								<Icon icon="material-symbols:view-column" class="text-lg" />
+								<Icon icon="material-symbols:view-column" class="text-base" />
 							</el-button>
 						</div>
 
@@ -385,9 +388,9 @@
 								@click="showSearchDialog = true"
 								size="default"
 								title="查找/替换 (Ctrl+F)"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
 							>
-								<Icon icon="material-symbols:search" class="text-lg" />
+								<Icon icon="material-symbols:search" class="text-base" />
 							</el-button>
 							<el-button
 								@click="showToc = !showToc"
@@ -396,9 +399,9 @@
 									showToc ? '!bg-blue-600 !text-white !border-blue-600' : ''
 								"
 								title="显示/隐藏大纲目录"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-9 !h-9 !p-0"
+								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
 							>
-								<Icon icon="material-symbols:toc" class="text-lg" />
+								<Icon icon="material-symbols:toc" class="text-base" />
 							</el-button>
 						</div>
 					</div>
@@ -650,7 +653,7 @@
 								<!-- 使用Tiptap的内置Markdown支持 -->
 								<EditorContent
 									:editor="editor"
-									class="absolute inset-0 p-8 overflow-y-auto"
+									class="absolute inset-0 pt-8 pr-8 pb-8 pl-15 overflow-y-auto"
 								/>
 								<!-- 气泡菜单 -->
 								<bubble-menu
@@ -720,7 +723,7 @@
 
 								<EditorContent
 									:editor="editor"
-									class="absolute inset-0 p-8 overflow-y-auto"
+									class="absolute inset-0 pt-8 pr-8 pb-8 pl-15 overflow-y-auto"
 								/>
 							</div>
 						</div>
@@ -762,7 +765,7 @@
 								>
 									<EditorContent
 										:editor="editor"
-										class="absolute inset-0 p-6 overflow-y-auto"
+										class="absolute inset-0 pt-6 pr-6 pb-6 pl-15 overflow-y-auto"
 									/>
 								</div>
 							</div>

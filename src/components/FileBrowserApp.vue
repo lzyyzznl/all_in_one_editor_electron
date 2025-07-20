@@ -35,27 +35,21 @@
 			<!-- 左侧文件树 -->
 			<div
 				class="bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex-shrink-0 overflow-hidden shadow-lg transition-all duration-300 ease-in-out relative"
-				:style="{ width: (isCollapsed ? 50 : sidebarWidth) + 'px' }"
+				:style="{ width: (isCollapsed ? 0 : sidebarWidth) + 'px' }"
 			>
-				<!-- 折叠按钮 -->
+				<!-- 折叠按钮 - 展开状态下显示在内部 -->
 				<div
+					v-if="!isCollapsed"
 					class="absolute top-1/2 transform -translate-y-1/2 translate-x-1/2 z-10 transition-all duration-300"
 					style="right: 0"
 				>
 					<el-button
 						@click="toggleCollapse"
 						size="small"
-						:title="isCollapsed ? '展开侧边栏' : '折叠侧边栏'"
+						title="折叠侧边栏"
 						class="!p-1 !w-6 !h-6 !rounded-md !bg-slate-100 dark:!bg-slate-700 !border-slate-200 dark:!border-slate-600 !text-slate-600 dark:!text-slate-400 hover:!bg-slate-200 dark:hover:!bg-slate-600 hover:!text-slate-700 dark:hover:!text-slate-300 !shadow-sm transition-all duration-200"
 					>
-						<Icon
-							:icon="
-								isCollapsed
-									? 'material-symbols:chevron-right'
-									: 'material-symbols:chevron-left'
-							"
-							class="w-4 h-4"
-						/>
+						<Icon icon="material-symbols:chevron-left" class="w-4 h-4" />
 					</el-button>
 				</div>
 
@@ -73,24 +67,21 @@
 						@file-updated="handleFileUpdated"
 					/>
 				</div>
+			</div>
 
-				<!-- 折叠状态下的图标 -->
-				<div
-					v-if="isCollapsed"
-					class="h-full flex flex-col items-center justify-start pt-16 gap-4"
+			<!-- 折叠状态下的展开按钮 - 悬浮在左侧边缘 -->
+			<div
+				v-if="isCollapsed"
+				class="absolute left-0 top-1/2 transform -translate-y-1/2 z-20 transition-all duration-300"
+			>
+				<el-button
+					@click="toggleCollapse"
+					size="small"
+					title="展开侧边栏"
+					class="!p-1 !w-8 !h-8 !rounded-r-md !rounded-l-none !bg-slate-100 dark:!bg-slate-700 !border-slate-200 dark:!border-slate-600 !text-slate-600 dark:!text-slate-400 hover:!bg-slate-200 dark:hover:!bg-slate-600 hover:!text-slate-700 dark:hover:!text-slate-300 !shadow-lg transition-all duration-200"
 				>
-					<div
-						class="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center shadow-lg"
-					>
-						<el-icon class="text-white text-lg"><FolderOpened /></el-icon>
-					</div>
-					<div
-						class="text-xs text-slate-500 dark:text-slate-400 transform rotate-90"
-						style="writing-mode: vertical-rl"
-					>
-						文件
-					</div>
-				</div>
+					<Icon icon="material-symbols:chevron-right" class="w-4 h-4" />
+				</el-button>
 			</div>
 
 			<!-- 拖拽分割线 -->
@@ -112,7 +103,7 @@
 			>
 				<!-- 页签栏 -->
 				<div
-					class="flex items-end bg-slate-200 dark:bg-slate-800 border-b border-slate-300 dark:border-slate-600 min-h-14 flex-shrink-0 shadow-sm"
+					class="flex items-end bg-slate-200 dark:bg-slate-800 border-b border-slate-300 dark:border-slate-600 min-h-11 flex-shrink-0 shadow-sm"
 				>
 					<div
 						class="flex items-end overflow-x-auto scrollbar-hide px-2 flex-1"
@@ -130,7 +121,7 @@
 						>
 							<template #item="{ element: tab }">
 								<div
-									class="relative flex items-center gap-3 px-4 py-2 cursor-pointer transition-all duration-200 min-w-0 group h-9 max-w-60 min-w-[120px] -mr-3 rounded-t-xl overflow-visible border-t border-l border-r"
+									class="relative flex items-center gap-3 px-3 py-1.5 cursor-pointer transition-all duration-200 min-w-0 group h-8 max-w-60 min-w-[100px] -mr-3 rounded-t-xl overflow-visible border-t border-l border-r"
 									:class="{
 										'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 shadow-lg z-10':
 											activeTabId === tab.id,
@@ -184,7 +175,7 @@
 								@click="createNewTab"
 								size="small"
 								title="新建标签页"
-								class="!w-7 !h-7 !rounded-md !bg-slate-100 dark:!bg-slate-700 !border-slate-200 dark:!border-slate-600 !text-slate-600 dark:!text-slate-400 hover:!bg-slate-50 dark:hover:!bg-slate-600 !font-medium !shadow-sm hover:!shadow-md !transition-all !duration-200 !mb-2"
+								class="!w-6 !h-6 !rounded-md !bg-slate-100 dark:!bg-slate-700 !border-slate-200 dark:!border-slate-600 !text-slate-600 dark:!text-slate-400 hover:!bg-slate-50 dark:hover:!bg-slate-600 !font-medium !shadow-sm hover:!shadow-md !transition-all !duration-200 !mb-1.5"
 							>
 								<Icon icon="material-symbols:add" class="text-sm" />
 							</el-button>
@@ -394,7 +385,7 @@ const isDragging = ref(false);
 const sidebarWidth = ref(300);
 const editorWidth = computed(() => window.innerWidth - sidebarWidth.value - 20);
 const isResizing = ref(false);
-const isCollapsed = ref(false);
+const isCollapsed = ref(true);
 
 // 计算属性
 const apiSupported = computed(
