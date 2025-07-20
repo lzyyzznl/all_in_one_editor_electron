@@ -11,7 +11,7 @@ out/
 .vite/
 .kiro/
 *.tsbuildinfo
-
+.claude
 # Electron
 app/
 release/
