@@ -1,414 +1,5 @@
 <template>
 	<div class="h-full flex flex-col bg-white dark:bg-slate-800">
-		<!-- 双行工具栏，仅在有标签时显示 -->
-		<div
-			v-if="tabCount > 0"
-			class="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-700 shadow-sm"
-		>
-			<!-- 第一行工具栏：基础编辑功能 -->
-			<div class="border-b border-slate-100 dark:border-slate-600">
-				<!-- 左侧：Tiptap编辑按钮组（响应式换行布局） -->
-				<div class="w-full">
-					<div class="flex flex-wrap items-center gap-2 px-3 py-2">
-						<!-- 基础文本格式化工具组 -->
-						<div class="flex items-center gap-1">
-							<el-button
-								size="default"
-								@click="editor?.chain().focus().toggleBold().run()"
-								title="粗体"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
-								:class="{
-									'!bg-gradient-to-r !from-blue-600 !to-purple-600 !border-none !text-white !shadow-md':
-										editor?.isActive('bold'),
-									'!bg-white dark:!bg-slate-800 !border-slate-300 dark:!border-slate-600 !text-slate-700 dark:!text-slate-300 hover:!bg-slate-50 dark:hover:!bg-slate-700':
-										!editor?.isActive('bold'),
-								}"
-							>
-								<Icon icon="material-symbols:format-bold" class="text-base" />
-							</el-button>
-							<el-button
-								size="default"
-								@click="editor?.chain().focus().toggleItalic().run()"
-								title="斜体"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
-								:class="{
-									'!bg-gradient-to-r !from-blue-600 !to-purple-600 !border-none !text-white !shadow-md':
-										editor?.isActive('italic'),
-									'!bg-white dark:!bg-slate-800 !border-slate-300 dark:!border-slate-600 !text-slate-700 dark:!text-slate-300 hover:!bg-slate-50 dark:hover:!bg-slate-700':
-										!editor?.isActive('italic'),
-								}"
-							>
-								<Icon icon="material-symbols:format-italic" class="text-base" />
-							</el-button>
-							<el-button
-								size="default"
-								:type="editor?.isActive('strike') ? 'primary' : 'default'"
-								@click="editor?.chain().focus().toggleStrike().run()"
-								title="删除线"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
-							>
-								<Icon
-									icon="material-symbols:format-strikethrough"
-									class="text-base"
-								/>
-							</el-button>
-							<el-button
-								size="default"
-								@click="editor?.chain().focus().toggleUnderline().run()"
-								title="下划线"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
-								:class="{
-									'!bg-gradient-to-r !from-blue-600 !to-purple-600 !border-none !text-white !shadow-md':
-										editor?.isActive('underline'),
-									'!bg-white dark:!bg-slate-800 !border-slate-300 dark:!border-slate-600 !text-slate-700 dark:!text-slate-300 hover:!bg-slate-50 dark:hover:!bg-slate-700':
-										!editor?.isActive('underline'),
-								}"
-							>
-								<Icon
-									icon="material-symbols:format-underlined"
-									class="text-base"
-								/>
-							</el-button>
-							<el-button
-								size="default"
-								:type="editor?.isActive('code') ? 'primary' : 'default'"
-								@click="editor?.chain().focus().toggleCode().run()"
-								title="行内代码"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
-							>
-								<Icon icon="material-symbols:code" class="text-base" />
-							</el-button>
-						</div>
-
-						<!-- 分隔线 -->
-						<div class="w-px h-6 bg-slate-300 dark:bg-slate-600"></div>
-
-						<!-- 标题下拉菜单 -->
-						<el-dropdown trigger="click">
-							<el-button
-								size="default"
-								class="!rounded-md !shadow-sm transition-all duration-200 !min-w-14 !h-7 !px-2"
-								title="标题样式"
-							>
-								<div class="flex items-center gap-1">
-									<span class="text-sm font-medium">{{
-										currentHeadingType
-									}}</span>
-									<Icon
-										icon="material-symbols:keyboard-arrow-down"
-										class="text-sm"
-									/>
-								</div>
-							</el-button>
-							<template #dropdown>
-								<el-dropdown-menu class="min-w-40 p-2">
-									<el-dropdown-item
-										@click.native="editor?.chain().focus().setParagraph().run()"
-										:class="{
-											'font-bold text-base': editor?.isActive('paragraph'),
-										}"
-										>正文
-										<span class="ml-4 text-xs text-slate-400"
-											>Alt Ctrl 0</span
-										></el-dropdown-item
-									>
-									<el-dropdown-item
-										v-for="level in [1, 2, 3, 4, 5, 6]"
-										:key="level"
-										@click.native="
-											editor
-												?.chain()
-												.focus()
-												.toggleHeading({
-													level: level as 1 | 2 | 3 | 4 | 5 | 6,
-												})
-												.run()
-										"
-										:class="{
-											'font-bold': editor?.isActive('heading', { level }),
-										}"
-									>
-										<span :class="'text-lg font-bold'">标题{{ level }}</span>
-										<span class="ml-4 text-xs text-slate-400"
-											>Alt Ctrl {{ level }}</span
-										>
-									</el-dropdown-item>
-								</el-dropdown-menu>
-							</template>
-						</el-dropdown>
-
-						<!-- 分隔线 -->
-						<div class="w-px h-6 bg-slate-300 dark:bg-slate-600"></div>
-
-						<!-- 列表工具组 -->
-						<div class="flex items-center gap-1">
-							<el-button
-								size="default"
-								:type="editor?.isActive('bulletList') ? 'primary' : 'default'"
-								@click="editor?.chain().focus().toggleBulletList().run()"
-								title="无序列表"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
-							>
-								<Icon
-									icon="material-symbols:format-list-bulleted"
-									class="text-base"
-								/>
-							</el-button>
-							<el-button
-								size="default"
-								:type="editor?.isActive('orderedList') ? 'primary' : 'default'"
-								@click="editor?.chain().focus().toggleOrderedList().run()"
-								title="有序列表"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
-							>
-								<Icon
-									icon="material-symbols:format-list-numbered"
-									class="text-base"
-								/>
-							</el-button>
-							<el-button
-								size="default"
-								:type="editor?.isActive('taskList') ? 'primary' : 'default'"
-								@click="editor?.chain().focus().toggleTaskList().run()"
-								title="任务列表"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
-							>
-								<Icon icon="material-symbols:checklist" class="text-base" />
-							</el-button>
-						</div>
-
-						<!-- 分隔线 -->
-						<div class="w-px h-6 bg-slate-300 dark:bg-slate-600"></div>
-
-						<!-- 引用和代码块工具组 -->
-						<div class="flex items-center gap-1">
-							<el-button
-								size="default"
-								:type="editor?.isActive('blockquote') ? 'primary' : 'default'"
-								@click="editor?.chain().focus().toggleBlockquote().run()"
-								title="引用"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
-							>
-								<Icon icon="material-symbols:format-quote" class="text-base" />
-							</el-button>
-							<el-button
-								size="default"
-								:type="editor?.isActive('codeBlock') ? 'primary' : 'default'"
-								@click="editor?.chain().focus().toggleCodeBlock().run()"
-								title="代码块"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
-							>
-								<Icon icon="material-symbols:code-blocks" class="text-base" />
-							</el-button>
-							<el-button
-								size="default"
-								@click="insertDetails"
-								title="插入折叠区域"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
-							>
-								<Icon icon="material-symbols:expand-more" class="text-base" />
-							</el-button>
-						</div>
-
-						<!-- 分隔线 -->
-						<div class="w-px h-6 bg-slate-300 dark:bg-slate-600"></div>
-
-						<!-- 插入工具组 -->
-						<div class="flex items-center gap-1">
-							<el-button
-								size="default"
-								@click="
-									editor
-										?.chain()
-										.focus()
-										.insertTable({ rows: 3, cols: 3, withHeaderRow: true })
-										.run()
-								"
-								title="插入表格"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
-							>
-								<Icon icon="material-symbols:table" class="text-base" />
-							</el-button>
-							<el-button
-								size="default"
-								@click="insertMermaidChart"
-								title="插入Mermaid"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
-							>
-								<Icon icon="material-symbols:insert-chart" class="text-base" />
-							</el-button>
-							<el-button
-								size="default"
-								@click="editor?.chain().focus().setHorizontalRule().run()"
-								title="分割线"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
-							>
-								<Icon
-									icon="material-symbols:horizontal-rule"
-									class="text-base"
-								/>
-							</el-button>
-							<el-button
-								size="default"
-								@click="convertCodeBlocks"
-								title="转换代码块语法 (``` ↔ :::)"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
-							>
-								<Icon icon="material-symbols:transform" class="text-base" />
-							</el-button>
-						</div>
-
-						<!-- 分隔线 -->
-						<div class="w-px h-6 bg-slate-300 dark:bg-slate-600"></div>
-						<!-- 撤销重做工具组 -->
-						<div class="flex items-center gap-1">
-							<el-button
-								size="default"
-								@click="editor?.chain().focus().undo().run()"
-								:disabled="!editor?.can().undo()"
-								title="撤销"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
-							>
-								<Icon icon="material-symbols:undo" class="text-base" />
-							</el-button>
-							<el-button
-								size="default"
-								@click="editor?.chain().focus().redo().run()"
-								:disabled="!editor?.can().redo()"
-								title="重做"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
-							>
-								<Icon icon="material-symbols:redo" class="text-base" />
-							</el-button>
-						</div>
-
-						<!-- 分隔线 -->
-						<div class="w-px h-6 bg-slate-300 dark:bg-slate-600"></div>
-
-						<!-- 导出工具组 -->
-						<div class="flex items-center gap-1">
-							<el-button
-								size="default"
-								@click="exportMarkdown"
-								title="导出Markdown"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
-							>
-								<Icon icon="material-symbols:description" class="text-base" />
-							</el-button>
-							<el-button
-								size="default"
-								@click="exportImage"
-								title="导出为图片"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
-							>
-								<Icon icon="material-symbols:image" class="text-base" />
-							</el-button>
-						</div>
-
-						<!-- 分隔线 -->
-						<div class="w-px h-6 bg-slate-300 dark:bg-slate-600"></div>
-
-						<!-- 文件操作组 -->
-						<div class="flex items-center gap-1">
-							<el-button
-								v-if="fileHandle && !isVirtual"
-								@click="reloadFile"
-								:disabled="isLoading"
-								title="重新加载"
-								size="default"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
-							>
-								<Icon
-									icon="material-symbols:refresh"
-									class="text-base"
-									:class="{ 'animate-spin': isLoading }"
-								/>
-							</el-button>
-							<el-button
-								v-if="fileHandle && !isVirtual"
-								@click="saveFile"
-								:disabled="isSaving"
-								title="保存文件"
-								size="default"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0 !bg-green-600 hover:!bg-green-700 !text-white !border-green-600"
-							>
-								<Icon icon="material-symbols:save" class="text-base" />
-							</el-button>
-							<el-button
-								v-if="isVirtual"
-								@click="saveAsFile"
-								:disabled="isSaving"
-								title="另存为文件"
-								size="default"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0 !bg-blue-600 hover:!bg-blue-700 !text-white !border-blue-600"
-							>
-								<Icon icon="material-symbols:save-as" class="text-base" />
-							</el-button>
-						</div>
-
-						<!-- 分隔线 -->
-						<div class="w-px h-6 bg-slate-300 dark:bg-slate-600"></div>
-
-						<!-- 模式切换组 -->
-						<div class="flex items-center gap-1">
-							<el-button
-								@click="toggleEditorMode('wysiwyg')"
-								:class="
-									editorMode === 'wysiwyg'
-										? '!bg-blue-600 !text-white !border-blue-600'
-										: ''
-								"
-								size="default"
-								title="富文本模式"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
-							>
-								<Icon icon="material-symbols:palette" class="text-base" />
-							</el-button>
-							<el-button
-								@click="toggleEditorMode('split')"
-								:class="
-									editorMode === 'split'
-										? '!bg-blue-600 !text-white !border-blue-600'
-										: ''
-								"
-								size="default"
-								title="分屏模式"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
-							>
-								<Icon icon="material-symbols:view-column" class="text-base" />
-							</el-button>
-						</div>
-
-						<!-- 分隔线 -->
-						<div class="w-px h-6 bg-slate-300 dark:bg-slate-600"></div>
-
-						<!-- 功能切换组 -->
-						<div class="flex items-center gap-1">
-							<el-button
-								@click="showSearchDialog = true"
-								size="default"
-								title="查找/替换 (Ctrl+F)"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
-							>
-								<Icon icon="material-symbols:search" class="text-base" />
-							</el-button>
-							<el-button
-								@click="showToc = !showToc"
-								size="default"
-								:class="
-									showToc ? '!bg-blue-600 !text-white !border-blue-600' : ''
-								"
-								title="显示/隐藏大纲目录"
-								class="!rounded-md !shadow-sm transition-all duration-200 !w-7 !h-7 !p-0"
-							>
-								<Icon icon="material-symbols:toc" class="text-base" />
-							</el-button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-
 		<!-- 编辑器主体 -->
 		<div class="flex-1 flex flex-col">
 			<!-- 欢迎界面 - 当没有页签时显示 -->
@@ -1542,8 +1133,114 @@ watch(editor, (newEditor) => {
 	}
 });
 
+// 菜单事件处理器
+const handleMenuAction = (action: string, ...args: any[]) => {
+	if (!editor.value) return;
+
+	switch (action) {
+		// 文件操作
+		case "reload-file":
+			reloadFile();
+			break;
+
+		// 编辑操作
+		case "find":
+		case "find-replace":
+			showSearchDialog.value = true;
+			break;
+
+		// 格式化 - 文本格式
+		case "format-bold":
+			editor.value.chain().focus().toggleBold().run();
+			break;
+		case "format-italic":
+			editor.value.chain().focus().toggleItalic().run();
+			break;
+		case "format-underline":
+			editor.value.chain().focus().toggleUnderline().run();
+			break;
+		case "format-strike":
+			editor.value.chain().focus().toggleStrike().run();
+			break;
+		case "format-code":
+			editor.value.chain().focus().toggleCode().run();
+			break;
+
+		// 格式化 - 段落格式
+		case "format-paragraph":
+			editor.value.chain().focus().setParagraph().run();
+			break;
+		case "format-heading":
+			const level = args[0] as 1 | 2 | 3 | 4 | 5 | 6;
+			editor.value.chain().focus().toggleHeading({ level }).run();
+			break;
+		case "format-blockquote":
+			editor.value.chain().focus().toggleBlockquote().run();
+			break;
+		case "format-codeblock":
+			editor.value.chain().focus().toggleCodeBlock().run();
+			break;
+
+		// 格式化 - 列表
+		case "format-bullet-list":
+			editor.value.chain().focus().toggleBulletList().run();
+			break;
+		case "format-ordered-list":
+			editor.value.chain().focus().toggleOrderedList().run();
+			break;
+		case "format-task-list":
+			editor.value.chain().focus().toggleTaskList().run();
+			break;
+
+		// 插入功能
+		case "insert-table":
+			editor.value
+				.chain()
+				.focus()
+				.insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+				.run();
+			break;
+		case "insert-mermaid":
+			insertMermaidChart();
+			break;
+		case "insert-horizontal-rule":
+			editor.value.chain().focus().setHorizontalRule().run();
+			break;
+		case "insert-details":
+			insertDetails();
+			break;
+
+		// 视图操作
+		case "view-wysiwyg":
+			toggleEditorMode("wysiwyg");
+			break;
+		case "view-split":
+			toggleEditorMode("split");
+			break;
+		case "view-toc":
+			showToc.value = !showToc.value;
+			break;
+
+		// 工具操作
+		case "export-markdown":
+			exportMarkdown();
+			break;
+		case "export-image":
+			exportImage();
+			break;
+		case "convert-codeblocks":
+			convertCodeBlocks();
+			break;
+	}
+};
+
 // 组件挂载时的初始化
 onMounted(() => {
+	// 设置菜单事件监听器
+	if (window.electronAPI) {
+		window.electronAPI.onMenuAction(handleMenuAction);
+	}
+
 	document.addEventListener("keydown", (e) => {
 		if (e.ctrlKey && e.key === "s") {
 			e.preventDefault();
@@ -1789,42 +1486,7 @@ const showToc = ref(false);
 // 大纲锚点数据
 const anchors = ref<any[]>([]);
 
-// 当前标题类型计算属性 - 用于标题按钮联动显示
-const currentHeadingType = computed(() => {
-	if (!editor.value) return "标题";
-
-	// 检查各级标题
-	for (let level = 1; level <= 6; level++) {
-		if (editor.value.isActive("heading", { level })) {
-			return `标题${level}`;
-		}
-	}
-
-	// 检查是否为正文段落
-	if (editor.value.isActive("paragraph")) {
-		return "正文";
-	}
-
-	// 检查其他块级元素
-	if (
-		editor.value.isActive("bulletList") ||
-		editor.value.isActive("orderedList") ||
-		editor.value.isActive("taskList")
-	) {
-		return "列表";
-	}
-
-	if (editor.value.isActive("blockquote")) {
-		return "引用";
-	}
-
-	if (editor.value.isActive("codeBlock")) {
-		return "代码";
-	}
-
-	// 默认返回
-	return "标题";
-});
+// 注意：currentHeadingType 计算属性已移除，因为工具栏已被删除
 
 // 目录数据
 const tocItems = computed(() =>

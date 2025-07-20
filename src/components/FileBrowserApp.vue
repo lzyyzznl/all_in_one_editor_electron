@@ -1411,13 +1411,26 @@ const toggleCollapse = () => {
 
 // 键盘快捷键
 const handleKeyboard = (e: KeyboardEvent) => {
-	if (e.ctrlKey) {
+	if (e.ctrlKey || e.metaKey) {
 		switch (e.key) {
 			case "o":
 				e.preventDefault();
 				if (fileTreeRef.value) {
 					fileTreeRef.value.selectRootDirectory();
 				}
+				break;
+			case "=":
+			case "+":
+				e.preventDefault();
+				handleZoomIn();
+				break;
+			case "-":
+				e.preventDefault();
+				handleZoomOut();
+				break;
+			case "0":
+				e.preventDefault();
+				handleZoomReset();
 				break;
 		}
 	}
@@ -1439,10 +1452,65 @@ const handleGlobalClick = (event: Event) => {
 	}
 };
 
+// 缩放处理函数
+const handleZoomIn = async () => {
+	if (window.electronAPI) {
+		try {
+			await window.electronAPI.zoomIn();
+		} catch (error) {
+			console.error("缩放放大失败:", error);
+		}
+	}
+};
+
+const handleZoomOut = async () => {
+	if (window.electronAPI) {
+		try {
+			await window.electronAPI.zoomOut();
+		} catch (error) {
+			console.error("缩放缩小失败:", error);
+		}
+	}
+};
+
+const handleZoomReset = async () => {
+	if (window.electronAPI) {
+		try {
+			await window.electronAPI.zoomReset();
+		} catch (error) {
+			console.error("重置缩放失败:", error);
+		}
+	}
+};
+
+// 鼠标滚轮事件处理器（支持Ctrl+滚轮缩放）
+let zoomTimeout: NodeJS.Timeout | null = null;
+const handleWheel = (event: WheelEvent) => {
+	// 检查是否按下Ctrl键（Windows/Linux）或Cmd键（macOS）
+	if (event.ctrlKey || event.metaKey) {
+		event.preventDefault(); // 阻止默认的页面缩放行为
+
+		// 防抖处理，避免过于频繁的缩放操作
+		if (zoomTimeout) {
+			clearTimeout(zoomTimeout);
+		}
+
+		zoomTimeout = setTimeout(() => {
+			if (event.deltaY < 0) {
+				// 向上滚动，放大
+				handleZoomIn();
+			} else if (event.deltaY > 0) {
+				// 向下滚动，缩小
+				handleZoomOut();
+			}
+		}, 50); // 50ms防抖
+	}
+};
+
 // 监听菜单事件
 const setupMenuListeners = () => {
 	if (window.electronAPI) {
-		window.electronAPI.onMenuAction((action: string) => {
+		window.electronAPI.onMenuAction((action: string, ...args: any[]) => {
 			switch (action) {
 				case "open-folder":
 					if (fileTreeRef.value) {
@@ -1466,6 +1534,17 @@ const setupMenuListeners = () => {
 						handleSaveAsRequested(content);
 					}
 					break;
+				case "zoom-in":
+					handleZoomIn();
+					break;
+				case "zoom-out":
+					handleZoomOut();
+					break;
+				case "zoom-reset":
+					handleZoomReset();
+					break;
+				// 其他菜单事件由MdEditor组件直接处理
+				// 这里只处理应用级别的菜单事件
 			}
 		});
 
@@ -1482,6 +1561,7 @@ onMounted(async () => {
 	document.addEventListener("keydown", handleKeyboard);
 	document.addEventListener("click", handleGlobalClick, true); // 使用捕获阶段
 	document.addEventListener("mousedown", handleGlobalClick, true); // 添加mousedown事件
+	document.addEventListener("wheel", handleWheel, { passive: false }); // 添加鼠标滚轮事件监听
 	window.addEventListener("beforeunload", handleBeforeUnload);
 
 	// 设置菜单事件监听
@@ -1500,7 +1580,13 @@ onUnmounted(async () => {
 	document.removeEventListener("keydown", handleKeyboard);
 	document.removeEventListener("click", handleGlobalClick, true);
 	document.removeEventListener("mousedown", handleGlobalClick, true);
+	document.removeEventListener("wheel", handleWheel);
 	window.removeEventListener("beforeunload", handleBeforeUnload);
+
+	// 清理缩放防抖定时器
+	if (zoomTimeout) {
+		clearTimeout(zoomTimeout);
+	}
 
 	if (openTabs.value.length > 0) {
 		await saveTabsState();

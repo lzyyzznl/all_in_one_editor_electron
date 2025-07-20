@@ -101,6 +101,11 @@ const createMenu = (mainWindow: BrowserWindow) => {
 					accelerator: "CmdOrCtrl+Shift+S",
 					click: () => mainWindow.webContents.send("menu-save-as"),
 				},
+				{
+					label: "重新加载文件",
+					accelerator: "CmdOrCtrl+R",
+					click: () => mainWindow.webContents.send("menu-reload-file"),
+				},
 				{ type: "separator" },
 				{
 					label: "退出",
@@ -119,6 +124,158 @@ const createMenu = (mainWindow: BrowserWindow) => {
 				{ role: "copy", label: "复制" },
 				{ role: "paste", label: "粘贴" },
 				{ role: "selectAll", label: "全选" },
+				{ type: "separator" },
+				{
+					label: "查找",
+					accelerator: "CmdOrCtrl+F",
+					click: () => mainWindow.webContents.send("menu-find"),
+				},
+				{
+					label: "查找和替换",
+					accelerator: "CmdOrCtrl+H",
+					click: () => mainWindow.webContents.send("menu-find-replace"),
+				},
+			],
+		},
+		{
+			label: "格式",
+			submenu: [
+				{
+					label: "文本格式",
+					submenu: [
+						{
+							label: "粗体",
+							accelerator: "CmdOrCtrl+B",
+							click: () => mainWindow.webContents.send("menu-format-bold"),
+						},
+						{
+							label: "斜体",
+							accelerator: "CmdOrCtrl+I",
+							click: () => mainWindow.webContents.send("menu-format-italic"),
+						},
+						{
+							label: "下划线",
+							accelerator: "CmdOrCtrl+U",
+							click: () => mainWindow.webContents.send("menu-format-underline"),
+						},
+						{
+							label: "删除线",
+							accelerator: "CmdOrCtrl+Shift+X",
+							click: () => mainWindow.webContents.send("menu-format-strike"),
+						},
+						{
+							label: "行内代码",
+							accelerator: "CmdOrCtrl+`",
+							click: () => mainWindow.webContents.send("menu-format-code"),
+						},
+					],
+				},
+				{
+					label: "段落格式",
+					submenu: [
+						{
+							label: "正文",
+							accelerator: "CmdOrCtrl+Alt+0",
+							click: () => mainWindow.webContents.send("menu-format-paragraph"),
+						},
+						{
+							label: "标题 1",
+							accelerator: "CmdOrCtrl+1",
+							click: () =>
+								mainWindow.webContents.send("menu-format-heading", 1),
+						},
+						{
+							label: "标题 2",
+							accelerator: "CmdOrCtrl+2",
+							click: () =>
+								mainWindow.webContents.send("menu-format-heading", 2),
+						},
+						{
+							label: "标题 3",
+							accelerator: "CmdOrCtrl+3",
+							click: () =>
+								mainWindow.webContents.send("menu-format-heading", 3),
+						},
+						{
+							label: "标题 4",
+							accelerator: "CmdOrCtrl+4",
+							click: () =>
+								mainWindow.webContents.send("menu-format-heading", 4),
+						},
+						{
+							label: "标题 5",
+							accelerator: "CmdOrCtrl+5",
+							click: () =>
+								mainWindow.webContents.send("menu-format-heading", 5),
+						},
+						{
+							label: "标题 6",
+							accelerator: "CmdOrCtrl+6",
+							click: () =>
+								mainWindow.webContents.send("menu-format-heading", 6),
+						},
+						{ type: "separator" },
+						{
+							label: "引用",
+							accelerator: "CmdOrCtrl+Shift+.",
+							click: () =>
+								mainWindow.webContents.send("menu-format-blockquote"),
+						},
+						{
+							label: "代码块",
+							accelerator: "CmdOrCtrl+Shift+C",
+							click: () => mainWindow.webContents.send("menu-format-codeblock"),
+						},
+					],
+				},
+				{
+					label: "列表",
+					submenu: [
+						{
+							label: "无序列表",
+							accelerator: "CmdOrCtrl+Shift+8",
+							click: () =>
+								mainWindow.webContents.send("menu-format-bullet-list"),
+						},
+						{
+							label: "有序列表",
+							accelerator: "CmdOrCtrl+Shift+7",
+							click: () =>
+								mainWindow.webContents.send("menu-format-ordered-list"),
+						},
+						{
+							label: "任务列表",
+							accelerator: "CmdOrCtrl+Shift+9",
+							click: () => mainWindow.webContents.send("menu-format-task-list"),
+						},
+					],
+				},
+			],
+		},
+		{
+			label: "插入",
+			submenu: [
+				{
+					label: "表格",
+					accelerator: "CmdOrCtrl+Shift+T",
+					click: () => mainWindow.webContents.send("menu-insert-table"),
+				},
+				{
+					label: "Mermaid 图表",
+					accelerator: "CmdOrCtrl+Shift+M",
+					click: () => mainWindow.webContents.send("menu-insert-mermaid"),
+				},
+				{
+					label: "分割线",
+					accelerator: "CmdOrCtrl+Shift+-",
+					click: () =>
+						mainWindow.webContents.send("menu-insert-horizontal-rule"),
+				},
+				{
+					label: "折叠区域",
+					accelerator: "CmdOrCtrl+Shift+D",
+					click: () => mainWindow.webContents.send("menu-insert-details"),
+				},
 			],
 		},
 		{
@@ -128,11 +285,73 @@ const createMenu = (mainWindow: BrowserWindow) => {
 				{ role: "forceReload", label: "强制重新加载" },
 				{ role: "toggleDevTools", label: "开发者工具" },
 				{ type: "separator" },
-				{ role: "resetZoom", label: "重置缩放" },
-				{ role: "zoomIn", label: "放大" },
-				{ role: "zoomOut", label: "缩小" },
+				{
+					label: "编辑模式",
+					submenu: [
+						{
+							label: "富文本模式",
+							accelerator: "CmdOrCtrl+Shift+W",
+							click: () => mainWindow.webContents.send("menu-view-wysiwyg"),
+						},
+						{
+							label: "分屏模式",
+							accelerator: "CmdOrCtrl+Shift+S",
+							click: () => mainWindow.webContents.send("menu-view-split"),
+						},
+					],
+				},
+				{
+					label: "面板",
+					submenu: [
+						{
+							label: "显示/隐藏大纲目录",
+							accelerator: "CmdOrCtrl+Shift+O",
+							click: () => mainWindow.webContents.send("menu-view-toc"),
+						},
+					],
+				},
+				{ type: "separator" },
+				{
+					label: "重置缩放",
+					accelerator: "CmdOrCtrl+0",
+					click: () => mainWindow.webContents.send("menu-zoom-reset"),
+				},
+				{
+					label: "放大",
+					accelerator: "CmdOrCtrl+Plus",
+					click: () => mainWindow.webContents.send("menu-zoom-in"),
+				},
+				{
+					label: "缩小",
+					accelerator: "CmdOrCtrl+-",
+					click: () => mainWindow.webContents.send("menu-zoom-out"),
+				},
 				{ type: "separator" },
 				{ role: "togglefullscreen", label: "切换全屏" },
+			],
+		},
+		{
+			label: "工具",
+			submenu: [
+				{
+					label: "导出",
+					submenu: [
+						{
+							label: "导出 Markdown",
+							accelerator: "CmdOrCtrl+Shift+E",
+							click: () => mainWindow.webContents.send("menu-export-markdown"),
+						},
+						{
+							label: "导出为图片",
+							accelerator: "CmdOrCtrl+Shift+I",
+							click: () => mainWindow.webContents.send("menu-export-image"),
+						},
+					],
+				},
+				{
+					label: "转换代码块语法",
+					click: () => mainWindow.webContents.send("menu-convert-codeblocks"),
+				},
 			],
 		},
 	];
@@ -264,6 +483,41 @@ ipcMain.handle(
 		return true;
 	}
 );
+
+// 处理缩放相关的IPC事件
+ipcMain.handle("zoom-in", async (_event: IpcMainInvokeEvent) => {
+	const windows = BrowserWindow.getAllWindows();
+	if (windows.length > 0) {
+		const mainWindow = windows[0];
+		const currentZoom = mainWindow.webContents.getZoomLevel();
+		const newZoom = Math.min(currentZoom + 0.5, 3.0); // 最大3倍缩放
+		mainWindow.webContents.setZoomLevel(newZoom);
+		return { success: true, zoomLevel: newZoom };
+	}
+	return { success: false };
+});
+
+ipcMain.handle("zoom-out", async (_event: IpcMainInvokeEvent) => {
+	const windows = BrowserWindow.getAllWindows();
+	if (windows.length > 0) {
+		const mainWindow = windows[0];
+		const currentZoom = mainWindow.webContents.getZoomLevel();
+		const newZoom = Math.max(currentZoom - 0.5, -2.0); // 最小0.5倍缩放
+		mainWindow.webContents.setZoomLevel(newZoom);
+		return { success: true, zoomLevel: newZoom };
+	}
+	return { success: false };
+});
+
+ipcMain.handle("zoom-reset", async (_event: IpcMainInvokeEvent) => {
+	const windows = BrowserWindow.getAllWindows();
+	if (windows.length > 0) {
+		const mainWindow = windows[0];
+		mainWindow.webContents.setZoomLevel(0); // 重置为1倍缩放
+		return { success: true, zoomLevel: 0 };
+	}
+	return { success: false };
+});
 
 app.on("ready", createWindow);
 
