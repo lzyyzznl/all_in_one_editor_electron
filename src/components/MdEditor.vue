@@ -57,6 +57,27 @@
 
 			<!-- 编辑器内容区域 -->
 			<div v-else class="flex-1 flex flex-col relative">
+				<!-- 文档大纲悬浮按钮 -->
+				<button
+					@click="toggleToc"
+					class="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/90 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-600 rounded-full shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center z-40 group"
+					title="显示/隐藏文档大纲"
+					:class="{
+						'bg-blue-500 dark:bg-blue-600 text-white border-blue-500 dark:border-blue-600':
+							showToc,
+					}"
+				>
+					<Icon
+						icon="material-symbols:toc"
+						class="text-lg transition-colors duration-200"
+						:class="{
+							'text-slate-600 dark:text-slate-300 group-hover:text-slate-800 dark:group-hover:text-slate-100':
+								!showToc,
+							'text-white': showToc,
+						}"
+					/>
+				</button>
+
 				<!-- 目录弹窗 - 移到最外层，确保在所有模式下都能显示 -->
 				<transition
 					enter-active-class="transition-opacity duration-300 ease-out"
@@ -1512,6 +1533,11 @@ const jumpToHeading = (id: string) => {
 			.scrollIntoView()
 			.run();
 	}
+};
+
+// 切换目录显示状态
+const toggleToc = () => {
+	showToc.value = !showToc.value;
 };
 
 const tocPanel = ref<HTMLElement | null>(null);
