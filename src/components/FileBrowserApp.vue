@@ -1477,6 +1477,12 @@ const setupMenuListeners = () => {
 					break;
 			}
 		});
+
+		// 监听主进程的关闭检查请求
+		window.electronAPI.onRequestCloseCheck(async () => {
+			const canClose = await confirmBeforeClose();
+			window.electronAPI.confirmClose(canClose);
+		});
 	}
 };
 
