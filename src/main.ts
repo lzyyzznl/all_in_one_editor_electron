@@ -16,15 +16,17 @@ import * as path from "path";
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
 declare const MAIN_WINDOW_VITE_NAME: string;
 
-// 处理 Squirrel 启动事件
-try {
-	const squirrelStartup = require("electron-squirrel-startup");
-	if (squirrelStartup) {
-		app.quit();
+// 处理 Squirrel 启动事件 (仅Windows)
+if (process.platform === "win32") {
+	try {
+		const squirrelStartup = require("electron-squirrel-startup");
+		if (squirrelStartup) {
+			app.quit();
+		}
+	} catch (error) {
+		// Windows下模块缺失时才提示
+		console.log("electron-squirrel-startup not found, continuing...");
 	}
-} catch (error) {
-	// 如果模块不存在，忽略错误
-	console.log("electron-squirrel-startup not found, continuing...");
 }
 
 const createWindow = (): void => {

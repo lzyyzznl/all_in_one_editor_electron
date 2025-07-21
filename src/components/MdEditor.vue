@@ -524,13 +524,6 @@ const editor = useEditor({
 
 		checkModified();
 	},
-	onSelectionUpdate: () => {
-		// 当光标位置改变时，计算属性会自动重新计算
-		// 这里不需要额外的逻辑，Vue的响应式系统会处理
-	},
-	onCreate: ({ editor }) => {
-		// 编辑器创建完成
-	},
 });
 
 // 处理Markdown源码模式下的输入事件
@@ -684,7 +677,13 @@ const scheduleAutoSave = () => {
 
 // 保存文件
 const saveFile = async () => {
-	if (!props.filePath || !editor.value) return;
+	if (!editor.value) return;
+
+	// 如果是虚拟页签或没有文件路径，触发另存为
+	if (props.isVirtual || !props.filePath) {
+		await saveAsFile();
+		return;
+	}
 
 	try {
 		isSaving.value = true;
@@ -1265,9 +1264,8 @@ onMounted(() => {
 	document.addEventListener("keydown", (e) => {
 		if (e.ctrlKey && e.key === "s") {
 			e.preventDefault();
-			if (isModified.value) {
-				saveFile();
-			}
+			// 移除isModified.value的检查，让saveFile方法内部处理逻辑
+			saveFile();
 		}
 		// 添加 Ctrl/Cmd + F 快捷键打开搜索
 		if ((e.ctrlKey || e.metaKey) && e.key === "f") {
