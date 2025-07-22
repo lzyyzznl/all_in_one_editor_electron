@@ -5,7 +5,7 @@
 			<!-- 欢迎界面 - 当没有页签时显示 -->
 			<div
 				v-if="tabCount === 0"
-				class="flex-1 flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900"
+				class="flex-1 flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 relative"
 			>
 				<div class="text-center max-w-md mx-auto px-8">
 					<!-- 欢迎图标 -->
@@ -52,6 +52,15 @@
 							打开文件夹
 						</el-button>
 					</div>
+				</div>
+
+				<!-- 作者信息 -->
+				<div
+					class="absolute bottom-4 right-4 text-xs text-slate-400 dark:text-slate-500 opacity-60 hover:opacity-80 transition-opacity duration-200"
+				>
+					<span class="font-medium">有问题联系作者：lizeyu</span>
+					<span class="mx-2">|</span>
+					<span>0668001050</span>
 				</div>
 			</div>
 
